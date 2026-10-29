@@ -1,12 +1,14 @@
 export default {
   title: 'Tuwındı Esaplaǵısh',
-  subtitle: 'Qálegen funktsiyanıń n-tártipli tuwındısı',
+  subtitle: 'Qálegen funktsiyanıń n-tártipli tuwındısı hám Teylor qatarı',
   themeToggle: 'Kúndizgi yamasa túngi rejimge ótiw',
   langSelect: 'Tildi tańlaw',
 
   tabs: {
     hosila: 'Tuwındı',
     hosilaSub: 'n-tártipli',
+    taylor: 'Teylor & Makloren',
+    taylorSub: 'Dárejeli qatar',
     cheatsheet: 'Formulalar kestesi',
     cheatsheetSub: 'Qádeler',
     examples: 'Mısallar',
@@ -16,11 +18,17 @@ export default {
   taskTitle: 'n-tártipli tuwındı esaplansın',
   taskDesc: 'Funktsiyanı jazıń, tuwındı tártibi n di kiritiń. Sayt qádemlerdi hám n boyınsha ulıwma formulanı shıǵaradı.',
 
+  taylorTaskTitle: 'Teylor hám Makloren qatarı formulası',
+  taylorTaskDesc: 'Funktsiyanı x₀ noqatı átirapında Teylor (yamasa x₀ = 0 da Makloren) dárejeli qatarına ayıriń. Hár bir tuwındı hám koeffitsient qádembe-qádem shıǵarıladı.',
+
   formTitle: 'Funktsiya',
   placeholder: 'mısalı: (4x+7)/(2x+3)',
+  taylorPlaceholder: 'mısalı: sin(x) yamasa e^x',
   ariaExpr: 'Funktsiya y(x)',
   previewAria: 'Funktsiyanıń kórinisi',
   orderLabel: 'Tuwındı tártibi n',
+  centerLabel: 'Jayıw orayı x₀',
+  maclaurinQuickBtn: 'Makloren (x₀ = 0)',
   btnCalc: 'Esaplaw',
   btnDecreaseN: 'n di kemeytiw',
   btnIncreaseN: 'n di arttırıw',
@@ -53,6 +61,19 @@ export default {
   copyLatex: 'LaTeX nusqalaw',
   copied: 'Nusqalandı',
   copyFail: 'Nusqalap bolmadı',
+
+  // Taylor / Maclaurin
+  taylorPolyTitle: (isMaclaurin, n) => isMaclaurin ? `${n}-dárejeli Makloren kóp aǵzalısı P_${n}(x)` : `${n}-dárejeli Teylor kóp aǵzalısı P_${n}(x)`,
+  peanoTitle: 'Peano qaldıqlı tolıq jayıw',
+  stepsTableTitle: 'Tuwındılar hám koeffitsientler kestesi',
+  standardSeriesTitle: 'Standart ulıwma Makloren qatarı',
+  convergenceRange: 'Jaqınlasıw aralıǵı: ',
+  thOrder: 'k',
+  thDeriv: 'f⁽ᵏ⁾(x)',
+  thVal: 'f⁽ᵏ⁾(x₀)',
+  thFact: 'k!',
+  thCoef: 'a_k = f⁽ᵏ⁾(x₀)/k!',
+  thTerm: 'Aǵza',
 
   casNote: 'Bul funktsiyada kóbeyme, quramalı ishki funktsiya yamasa usıǵan uqsas dúzilis bar, sonlıqtan n boyınsha ulıwma formula shıǵarılmadı. Tuwındılar izbe-iz differentsiallaw arqalı esaplandı.',
   casMaxWarn: (max) => `Bunday funktsiya ushın n ${max} ten aspawı kerek. n di kemeytiń.`,

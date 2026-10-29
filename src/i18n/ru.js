@@ -1,12 +1,14 @@
 export default {
   title: 'Калькулятор Производных',
-  subtitle: 'n-я производная любой функции',
+  subtitle: 'n-я производная и ряд Тейлора любой функции',
   themeToggle: 'Сменить дневную/ночную тему',
   langSelect: 'Выбор языка',
 
   tabs: {
     hosila: 'Производная',
     hosilaSub: 'n-го порядка',
+    taylor: 'Тейлор и Маклорен',
+    taylorSub: 'Степенной ряд',
     cheatsheet: 'Таблица формул',
     cheatsheetSub: 'Правила',
     examples: 'Примеры',
@@ -16,11 +18,17 @@ export default {
   taskTitle: 'Вычисление n-й производной',
   taskDesc: 'Введите функцию и порядок производной n. Сервис выведет шаги решения и общую формулу по n.',
 
+  taylorTaskTitle: 'Формула и ряд Тейлора / Маклорена',
+  taylorTaskDesc: 'Разложение функции в степенной ряд Тейлора в окрестности точки x₀ (или Маклорена при x₀ = 0). Выводятся все производные и шаги вычисления.',
+
   formTitle: 'Функция',
   placeholder: 'например: (4x+7)/(2x+3)',
+  taylorPlaceholder: 'например: sin(x) или e^x',
   ariaExpr: 'Функция y(x)',
   previewAria: 'Предпросмотр функции',
   orderLabel: 'Порядок производной n',
+  centerLabel: 'Точка разложения x₀',
+  maclaurinQuickBtn: 'Маклорен (x₀ = 0)',
   btnCalc: 'Вычислить',
   btnDecreaseN: 'Уменьшить n',
   btnIncreaseN: 'Увеличить n',
@@ -53,6 +61,19 @@ export default {
   copyLatex: 'Копировать LaTeX',
   copied: 'Скопировано',
   copyFail: 'Не удалось скопировать',
+
+  // Taylor / Maclaurin
+  taylorPolyTitle: (isMaclaurin, n) => isMaclaurin ? `Многочлен Маклорена степени ${n}: P_${n}(x)` : `Многочлен Тейлора степени ${n}: P_${n}(x)`,
+  peanoTitle: 'Формула с остаточным членом в форме Пеано',
+  stepsTableTitle: 'Таблица производных и коэффициентов',
+  standardSeriesTitle: 'Стандартный общий ряд Маклорена',
+  convergenceRange: 'Область сходимости: ',
+  thOrder: 'k',
+  thDeriv: 'f⁽ᵏ⁾(x)',
+  thVal: 'f⁽ᵏ⁾(x₀)',
+  thFact: 'k!',
+  thCoef: 'a_k = f⁽ᵏ⁾(x₀)/k!',
+  thTerm: 'Слагаемое',
 
   casNote: 'В этой функции присутствует произведение, сложная композиция или подобная структура, поэтому общая формула по n не выведена. Производные найдены последовательным дифференцированием.',
   casMaxWarn: (max) => `Для таких функций n не должно превышать ${max}. Уменьшите n.`,

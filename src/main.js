@@ -1,5 +1,6 @@
 import { analyze, LIMITS } from './math/engine.js';
 import { casDerivs } from './math/diff.js';
+import { computeTaylorSeries } from './math/taylor.js';
 import { initI18n, getLang, setLang, t, LANGUAGES } from './i18n/index.js';
 import { renderMath } from './ui/renderer.js';
 import { createKeypad, handleKeypadPress } from './ui/keypad.js';
@@ -21,7 +22,9 @@ function h(tag, cls, text) {
 // State
 let currentTab = 'hosila';
 let lastCalcKey = '';
+let lastTaylorKey = '';
 let updateDebounceTimer = null;
+let updateTaylorDebounceTimer = null;
 
 // Normalizer for LaTeX strings
 function norm(s) {
@@ -67,6 +70,7 @@ function buildTabs() {
 
   const TABS_DATA = [
     { id: 'hosila', title: t('tabs.hosila'), sub: t('tabs.hosilaSub') },
+    { id: 'taylor', title: t('tabs.taylor'), sub: t('tabs.taylorSub') },
     { id: 'cheatsheet', title: t('tabs.cheatsheet'), sub: t('tabs.cheatsheetSub') },
     { id: 'examples', title: t('tabs.examples'), sub: t('tabs.examplesSub') }
   ];
@@ -93,7 +97,7 @@ function switchTab(tabId) {
 
   // Update tabs buttons
   $$('#tabs .tab').forEach((b, idx) => {
-    const ids = ['hosila', 'cheatsheet', 'examples'];
+    const ids = ['hosila', 'taylor', 'cheatsheet', 'examples'];
     if (ids[idx] === tabId) {
       b.setAttribute('aria-current', 'page');
     } else {
@@ -103,22 +107,30 @@ function switchTab(tabId) {
 
   // Toggle sections
   const secHosila = $('#sec-hosila');
+  const secTaylor = $('#sec-taylor');
   const secCheat = $('#sec-cheatsheet');
   const secEx = $('#sec-examples');
 
   secHosila.style.display = tabId === 'hosila' ? 'flex' : 'none';
+  secTaylor.style.display = tabId === 'taylor' ? 'flex' : 'none';
   secCheat.style.display = tabId === 'cheatsheet' ? 'flex' : 'none';
   secEx.style.display = tabId === 'examples' ? 'flex' : 'none';
 
-  if (tabId === 'cheatsheet') {
+  if (tabId === 'taylor') {
+    updateTaylor(false);
+  } else if (tabId === 'cheatsheet') {
     renderCheatSheet($('#cheatsheet-content'), getLang());
   } else if (tabId === 'examples') {
-    renderExamples($('#examples-content'), (ex) => {
-      $('#f-expr').value = ex.expr;
-      $('#f-n').value = ex.n;
-      switchTab('hosila');
-      update(true);
-    }, getLang());
+    renderExamples(
+      $('#examples-content'),
+      (ex) => {
+        $('#f-expr').value = ex.expr;
+        $('#f-n').value = ex.n;
+        switchTab('hosila');
+        update(true);
+      },
+      getLang()
+    );
   }
 }
 
@@ -148,9 +160,9 @@ function applyLanguage() {
   $('#app-sub').textContent = t('subtitle');
   $('#theme').setAttribute('aria-label', t('themeToggle'));
 
+  // Section 1: Hosila
   $('#h-task').textContent = t('taskTitle');
   $('#p-task-desc').textContent = t('taskDesc');
-
   $('#h-form-title').textContent = t('formTitle');
   $('#f-expr').placeholder = t('placeholder');
   $('#f-expr').setAttribute('aria-label', t('ariaExpr'));
@@ -159,44 +171,89 @@ function applyLanguage() {
   $('#solve').textContent = t('btnCalc');
   $('#n-minus').setAttribute('aria-label', t('btnDecreaseN'));
   $('#n-plus').setAttribute('aria-label', t('btnIncreaseN'));
-
   $('#h-res').textContent = t('solutionTitle');
+
+  // Section 2: Taylor
+  $('#h-taylor-task').textContent = t('taylorTaskTitle');
+  $('#p-taylor-desc').textContent = t('taylorTaskDesc');
+  $('#h-taylor-form-title').textContent = t('formTitle');
+  $('#t-expr').placeholder = t('taylorPlaceholder');
+  $('#t-expr').setAttribute('aria-label', t('ariaExpr'));
+  $('#t-preview').setAttribute('aria-label', t('previewAria'));
+  $('#lbl-t-x0').textContent = t('centerLabel');
+  $('#lbl-t-n').textContent = t('orderLabel');
+  $('#solve-taylor').textContent = t('btnCalc');
+  $('#t-n-minus').setAttribute('aria-label', t('btnDecreaseN'));
+  $('#t-n-plus').setAttribute('aria-label', t('btnIncreaseN'));
+  $('#h-taylor-res').textContent = t('solutionTitle');
+
+  // Footer
   $('#footer-text').textContent = t('footer');
 
   // Cheatsheet section headers
-  $('#h-cheatsheet-title').textContent = lang === 'kaa' ? 'Standart tuwındılar kestesi' : lang === 'ru' ? 'Таблица стандартных производных' : 'Standart hosilalar jadvali';
-  $('#p-cheatsheet-desc').textContent = lang === 'kaa' ? 'n-tártipli tuwındılardıń tiykarǵı formulaları hám differentsiallaw qádeleri.' : lang === 'ru' ? 'Основные формулы n-й производной и правила дифференцирования.' : 'n-tartibli hosilalarning asosiy formulalari va differensiallash qoidalari.';
+  $('#h-cheatsheet-title').textContent =
+    lang === 'kaa'
+      ? 'Standart tuwındılar kestesi'
+      : lang === 'ru'
+      ? 'Таблица стандартных производных'
+      : 'Standart hosilalar jadvali';
+  $('#p-cheatsheet-desc').textContent =
+    lang === 'kaa'
+      ? 'n-tártipli tuwındılardıń tiykarǵı formulaları hám differentsiallaw qádeleri.'
+      : lang === 'ru'
+      ? 'Основные формулы n-й производной и правила дифференцирования.'
+      : 'n-tartibli hosilalarning asosiy formulalari va differensiallash qoidalari.';
 
   // Examples section headers
-  $('#h-examples-title').textContent = lang === 'kaa' ? 'Ámeliy mısallar toplamı' : lang === 'ru' ? 'Сборник практических примеров' : 'Amaliy misollar to‘plami';
-  $('#p-examples-desc').textContent = lang === 'kaa' ? 'Tayar mısallardan birin tańlań hám onıń tolıq sheshiliw qádemlerin kóriń.' : lang === 'ru' ? 'Выберите пример для автоматического решения с подробными шагами.' : 'Tayyor misollardan birini tanlang va to‘liq yechilish bosqichlarini ko‘ring.';
+  $('#h-examples-title').textContent =
+    lang === 'kaa'
+      ? 'Ámeliy mısallar toplamı'
+      : lang === 'ru'
+      ? 'Сборник практических примеров'
+      : 'Amaliy misollar to‘plami';
+  $('#p-examples-desc').textContent =
+    lang === 'kaa'
+      ? 'Tayar mısallardan birin tańlań hám onıń tolıq sheshiliw qádemlerin kóriń.'
+      : lang === 'ru'
+      ? 'Выберите пример для автоматического решения с подробными шагами.'
+      : 'Tayyor misollardan birini tanlang va to‘liq yechilish bosqichlarini ko‘ring.';
 
   buildTabs();
+
   createKeypad($('#keys'), (k) => {
     handleKeypadPress($('#f-expr'), k, () => update(false));
   });
+
+  createKeypad($('#t-keys'), (k) => {
+    handleKeypadPress($('#t-expr'), k, () => updateTaylor(false));
+  });
+
   renderHelpGuide();
 
-  // Re-render current active tab contents if needed
   if (currentTab === 'cheatsheet') {
     renderCheatSheet($('#cheatsheet-content'), lang);
   } else if (currentTab === 'examples') {
-    renderExamples($('#examples-content'), (ex) => {
-      $('#f-expr').value = ex.expr;
-      $('#f-n').value = ex.n;
-      switchTab('hosila');
-      update(true);
-    }, lang);
+    renderExamples(
+      $('#examples-content'),
+      (ex) => {
+        $('#f-expr').value = ex.expr;
+        $('#f-n').value = ex.n;
+        switchTab('hosila');
+        update(true);
+      },
+      lang
+    );
   }
 
-  // Force re-calculation to translate result steps
   lastCalcKey = '';
+  lastTaylorKey = '';
   update(false);
+  updateTaylor(false);
 }
 
-/* ----------------- Render Result Logic ----------------- */
-function renderEmpty(msg) {
-  const box = $('#res-body');
+/* ----------------- Render Hosila Result ----------------- */
+function renderEmpty(targetId, msg) {
+  const box = $(targetId);
   box.replaceChildren(h('p', 'empty', msg));
 }
 
@@ -232,7 +289,6 @@ function renderResult(a, n) {
 
   const yn = `y^{(${n})}`;
 
-  // 1. Given function
   const b0 = block(t('givenFunc'));
   row(b0, a.tex);
 
@@ -272,7 +328,6 @@ function renderResult(a, n) {
       row(b3, rule);
     });
 
-    // General formula answer
     const ba = block(t('answer'), 'answer');
     row(ba, f.general, 'big');
     if (f.polyNote) {
@@ -280,13 +335,11 @@ function renderResult(a, n) {
     }
     copyBtn(ba, f.general);
 
-    // Answer for n
     const bn = block(t('atN', n));
     row(bn, `${yn}=${f.at(n).tex}`, 'big');
     return;
   }
 
-  // Fallback: general formula could not be deduced (e.g. complex product or chain)
   const nb = block(t('solutionTitle'));
   nb.append(h('p', null, t('casNote')));
 
@@ -330,7 +383,128 @@ function renderResult(a, n) {
   copyBtn(ba2, finalAns);
 }
 
-/* ----------------- Update & Live Math ----------------- */
+/* ----------------- Render Taylor / Maclaurin Result ----------------- */
+function renderTaylorResult(res) {
+  const box = $('#taylor-res-body');
+  box.replaceChildren();
+
+  function block(label, cls) {
+    const b = h('div', 'blk' + (cls ? ` ${cls}` : ''));
+    b.append(h('div', 'lbl', label));
+    box.append(b);
+    return b;
+  }
+
+  function row(parent, tex, cls) {
+    const d = h('div', 'math' + (cls ? ` ${cls}` : ''));
+    parent.append(d);
+    renderMath(d, tex, true);
+    return d;
+  }
+
+  function copyBtn(parent, tex) {
+    const r = h('div', 'ans-row');
+    const cb = h('button', 'btn', t('copyLatex'));
+    cb.type = 'button';
+    cb.addEventListener('click', () => {
+      copyText(tex, t('copied'), t('copyFail'));
+    });
+    r.append(cb);
+    parent.append(r);
+  }
+
+  // 1. Theoretical definition box (matches user's screenshot!)
+  const thBox = h('div', 'theory-box');
+  const thH4 = h(
+    'h4',
+    null,
+    res.isMaclaurin
+      ? 'Makloren qatori va formulasi (x₀ = 0)'
+      : `Teylor qatori va formulasi (x₀ = ${res.x0})`
+  );
+  thBox.appendChild(thH4);
+
+  const thMath = h('div', 'math');
+  const generalFormulaTex = res.isMaclaurin
+    ? String.raw`f(x) = f(0) + \frac{f'(0)}{1!} x + \frac{f''(0)}{2!} x^2 + \dots + \frac{f^{(n)}(0)}{n!} x^n + R_n(x) = \sum_{k=0}^{n} \frac{f^{(k)}(0)}{k!} x^k + R_n(x)`
+    : String.raw`f(x) = f(x_0) + \frac{f'(x_0)}{1!} (x - x_0) + \dots + \frac{f^{(n)}(x_0)}{n!} (x - x_0)^n + R_n(x) = \sum_{k=0}^{n} \frac{f^{(k)}(x_0)}{k!} (x - x_0)^k + R_n(x)`;
+  renderMath(thMath, generalFormulaTex, true);
+  thBox.appendChild(thMath);
+  box.appendChild(thBox);
+
+  // 2. Taylor / Maclaurin Polynomial P_n(x)
+  const bPoly = block(t('taylorPolyTitle', res.isMaclaurin, res.n), 'answer');
+  const polyStr = `P_{${res.n}}(x) = ${res.polyTex}`;
+  row(bPoly, polyStr, 'big');
+  copyBtn(bPoly, polyStr);
+
+  // 3. Full Peano Remainder Equation
+  const bPeano = block(t('peanoTitle'));
+  row(bPeano, res.peanoEquation, 'big');
+
+  // 4. Standard Maclaurin match if exists
+  if (res.matchedStandard) {
+    const bStd = block(t('standardSeriesTitle'));
+    bStd.append(
+      h(
+        'p',
+        null,
+        `${t('givenFunc')}: ${res.matchedStandard.name}. ${t('convergenceRange')}`
+      )
+    );
+    const spConv = h('span', 'inline-math');
+    bStd.appendChild(spConv);
+    renderMath(spConv, res.matchedStandard.convergence, false);
+    row(bStd, res.matchedStandard.general, 'big');
+  }
+
+  // 5. Steps & Derivatives Table
+  const bSteps = block(t('stepsTableTitle'));
+  const tableWrap = h('div', 'taylor-table-wrap');
+  const tbl = h('table', 'taylor-table');
+
+  // Header row
+  const thead = h('thead');
+  const trH = h('tr');
+  ['k', 'f^{(k)}(x)', `f^{(k)}(${res.x0})`, 'k!', 'a_k = \\frac{f^{(k)}(x_0)}{k!}', 'Had'].forEach(
+    (col) => {
+      const thEl = h('th');
+      renderMath(thEl, col, false);
+      trH.appendChild(thEl);
+    }
+  );
+  thead.appendChild(trH);
+  tbl.appendChild(thead);
+
+  // Body rows
+  const tbody = h('tbody');
+  res.steps.forEach((st) => {
+    const tr = h('tr');
+
+    const tdK = h('td', null, String(st.k));
+    const tdDeriv = h('td');
+    renderMath(tdDeriv, st.derivTex, false);
+
+    const tdVal = h('td');
+    renderMath(tdVal, st.valTex, false);
+
+    const tdFact = h('td', null, st.factStr);
+
+    const tdCoef = h('td');
+    renderMath(tdCoef, st.coefTex, false);
+
+    const tdTerm = h('td');
+    renderMath(tdTerm, st.termTex, false);
+
+    tr.append(tdK, tdDeriv, tdVal, tdFact, tdCoef, tdTerm);
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  tableWrap.appendChild(tbl);
+  bSteps.appendChild(tableWrap);
+}
+
+/* ----------------- Update & Live Math (Hosila) ----------------- */
 function update(scroll) {
   const exprEl = $('#f-expr');
   const nEl = $('#f-n');
@@ -344,7 +518,7 @@ function update(scroll) {
   if (!expr.trim()) {
     err.textContent = '';
     prev.hidden = true;
-    renderEmpty(t('emptyPrompt'));
+    renderEmpty('#res-body', t('emptyPrompt'));
     return;
   }
 
@@ -359,7 +533,7 @@ function update(scroll) {
     exprEl.setAttribute('aria-invalid', 'true');
     err.textContent = a.error;
     prev.hidden = true;
-    renderEmpty(a.error);
+    renderEmpty('#res-body', a.error);
     return;
   }
 
@@ -371,7 +545,7 @@ function update(scroll) {
   if (!(n >= 1 && n <= LIMITS.nMax)) {
     nEl.setAttribute('aria-invalid', 'true');
     err.textContent = t('errNRange', LIMITS.nMax);
-    renderEmpty(t('errNRangePrompt', LIMITS.nMax));
+    renderEmpty('#res-body', t('errNRangePrompt', LIMITS.nMax));
     return;
   }
 
@@ -383,12 +557,77 @@ function update(scroll) {
   }
 
   if (scroll) {
-    scrollToResult();
+    scrollToElement($('#result'));
   }
 }
 
-function scrollToResult() {
-  const el = $('#result');
+/* ----------------- Update & Live Math (Taylor) ----------------- */
+function updateTaylor(scroll) {
+  const exprEl = $('#t-expr');
+  const x0El = $('#t-x0');
+  const nEl = $('#t-n');
+  const err = $('#t-err');
+  const prev = $('#t-preview');
+
+  exprEl.removeAttribute('aria-invalid');
+  nEl.removeAttribute('aria-invalid');
+
+  const expr = exprEl.value;
+  if (!expr.trim()) {
+    err.textContent = '';
+    prev.hidden = true;
+    renderEmpty('#taylor-res-body', t('emptyPrompt'));
+    return;
+  }
+
+  let a;
+  try {
+    a = analyze(expr);
+  } catch (e) {
+    a = { error: t('errEmptyExpr') + (e.message || '') };
+  }
+
+  if (a.error) {
+    exprEl.setAttribute('aria-invalid', 'true');
+    err.textContent = a.error;
+    prev.hidden = true;
+    renderEmpty('#taylor-res-body', a.error);
+    return;
+  }
+
+  prev.hidden = false;
+  renderMath(prev, `f(x) = ${a.tex.replace(/^y=/, '')}`, true);
+
+  const rawN = String(nEl.value || '').trim();
+  const n = /^\d{1,2}$/.test(rawN) ? parseInt(rawN, 10) : NaN;
+  if (!(n >= 1 && n <= 15)) {
+    nEl.setAttribute('aria-invalid', 'true');
+    err.textContent = t('errNRange', 15);
+    renderEmpty('#taylor-res-body', t('errNRangePrompt', 15));
+    return;
+  }
+
+  const x0 = x0El.value || '0';
+  err.textContent = '';
+
+  const key = `${expr}|${x0}|${n}|${getLang()}`;
+  if (key !== lastTaylorKey || scroll) {
+    lastTaylorKey = key;
+    const res = computeTaylorSeries(expr, x0, n);
+    if (res.error) {
+      err.textContent = res.error;
+      renderEmpty('#taylor-res-body', res.error);
+      return;
+    }
+    renderTaylorResult(res);
+  }
+
+  if (scroll) {
+    scrollToElement($('#taylor-result'));
+  }
+}
+
+function scrollToElement(el) {
   if (!el || typeof el.scrollIntoView !== 'function') return;
   const reduce =
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -406,19 +645,25 @@ function scheduleUpdate() {
   }, 120);
 }
 
-function bumpN(d) {
-  const el = $('#f-n');
+function scheduleTaylorUpdate() {
+  clearTimeout(updateTaylorDebounceTimer);
+  updateTaylorDebounceTimer = setTimeout(() => {
+    updateTaylor(false);
+  }, 120);
+}
+
+function bumpN(inputSelector, d, min = 1, max = 30, callback) {
+  const el = $(inputSelector);
   let v = parseInt(el.value, 10);
   if (isNaN(v)) v = 5;
-  el.value = String(Math.min(LIMITS.nMax, Math.max(1, v + d)));
-  update(false);
+  el.value = String(Math.min(max, Math.max(min, v + d)));
+  if (callback) callback();
 }
 
 /* ----------------- App Initialization ----------------- */
 function initApp() {
   const initialLang = initI18n();
 
-  // Setup language selector in DOM
   const langSelect = $('#lang-select');
   if (langSelect) {
     langSelect.value = initialLang;
@@ -434,23 +679,50 @@ function initApp() {
   initTheme();
   applyLanguage();
 
-  // Event listeners
+  // Section 1: Hosila Events
   $('#form').addEventListener('submit', (e) => {
     e.preventDefault();
     update(true);
   });
-
   $('#f-expr').addEventListener('input', scheduleUpdate);
   $('#f-n').addEventListener('input', scheduleUpdate);
+  $('#n-minus').addEventListener('click', () => bumpN('#f-n', -1, 1, LIMITS.nMax, () => update(false)));
+  $('#n-plus').addEventListener('click', () => bumpN('#f-n', 1, 1, LIMITS.nMax, () => update(false)));
 
-  $('#n-minus').addEventListener('click', () => bumpN(-1));
-  $('#n-plus').addEventListener('click', () => bumpN(1));
+  // Section 2: Taylor Events
+  $('#form-taylor').addEventListener('submit', (e) => {
+    e.preventDefault();
+    updateTaylor(true);
+  });
+  $('#t-expr').addEventListener('input', scheduleTaylorUpdate);
+  $('#t-x0').addEventListener('input', scheduleTaylorUpdate);
+  $('#t-n').addEventListener('input', scheduleTaylorUpdate);
+  $('#t-n-minus').addEventListener('click', () => bumpN('#t-n', -1, 1, 15, () => updateTaylor(false)));
+  $('#t-n-plus').addEventListener('click', () => bumpN('#t-n', 1, 1, 15, () => updateTaylor(false)));
 
-  // Run initial calculation
+  $('#btn-x0-zero').addEventListener('click', () => {
+    $('#t-x0').value = '0';
+    updateTaylor(false);
+  });
+
+  // Preset buttons
+  $$('.preset-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const ex = btn.dataset.expr;
+      const x0 = btn.dataset.x0;
+      const n = btn.dataset.n;
+      if (ex) $('#t-expr').value = ex;
+      if (x0 !== undefined) $('#t-x0').value = x0;
+      if (n) $('#t-n').value = n;
+      updateTaylor(true);
+    });
+  });
+
+  // Initial runs
   update(false);
+  updateTaylor(false);
 }
 
-// Start app when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {

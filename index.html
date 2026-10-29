@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Tuwındı Esaplaǵısh / Hosila Hisoblagich</title>
-  <meta name="description" content="Istalgan funksiyaning n-tartibli hosilasini qadamma-qadam hisoblagich. Qálegen funktsiyanıń n-tártipli tuwındısın qádembe-qádem esaplaǵısh.">
+  <meta name="description" content="Istalgan funksiyaning n-tartibli hosilasini va Teylor/Makloren qatorini qadamma-qadam hisoblagich.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@500;600&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -100,7 +100,77 @@
         </div>
       </section>
 
-      <!-- Section 2: Cheat Sheet -->
+      <!-- Section 2: Taylor & Maclaurin Series -->
+      <section id="sec-taylor" style="display:none;flex-direction:column;gap:22px">
+        <div class="task-head">
+          <h2 id="h-taylor-task">Teylor hám Makloren qatarı formulası</h2>
+          <p id="p-taylor-desc">Funktsiyanı x₀ noqatı átirapında Teylor (yamasa x₀ = 0 da Makloren) dárejeli qatarına ayıriń. Hár bir tuwındı hám koeffitsient qádembe-qádem shıǵarıladı.</p>
+        </div>
+
+        <div class="grid">
+          <!-- Taylor Form -->
+          <form class="card raised" id="form-taylor" autocomplete="off" novalidate>
+            <h3 id="h-taylor-form-title">Funktsiya</h3>
+            <div class="expr-wrap">
+              <span class="yeq" aria-hidden="true">f(x) =</span>
+              <input id="t-expr" name="t_expr" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"
+                placeholder="mısalı: sin(x) yamasa e^x" aria-label="Funktsiya f(x)" aria-describedby="t-err" value="sin(x)">
+            </div>
+
+            <!-- Virtual Keypad for Taylor -->
+            <div class="keys" id="t-keys" aria-label="Belgiler paneli"></div>
+
+            <!-- Live Math Preview -->
+            <div class="math" id="t-preview" aria-label="Funktsiya kórinisi"></div>
+
+            <!-- Quick Preset Buttons -->
+            <div class="quick-presets">
+              <span class="lbl">Tezkor namunalar:</span>
+              <div class="preset-btns">
+                <button type="button" class="btn-sm preset-btn" data-expr="sin(x)" data-x0="0" data-n="5">sin(x)</button>
+                <button type="button" class="btn-sm preset-btn" data-expr="cos(x)" data-x0="0" data-n="4">cos(x)</button>
+                <button type="button" class="btn-sm preset-btn" data-expr="e^x" data-x0="0" data-n="4">e^x</button>
+                <button type="button" class="btn-sm preset-btn" data-expr="ln(1+x)" data-x0="0" data-n="4">ln(1+x)</button>
+                <button type="button" class="btn-sm preset-btn" data-expr="1/(1-x)" data-x0="0" data-n="4">1/(1-x)</button>
+                <button type="button" class="btn-sm preset-btn" data-expr="ln(x)" data-x0="1" data-n="4">ln(x) [x₀=1]</button>
+              </div>
+            </div>
+
+            <!-- x0 and n input row -->
+            <div class="taylor-params-row">
+              <div class="field" style="flex:1;min-width:140px">
+                <label for="t-x0" id="lbl-t-x0">Jayıw orayı x₀</label>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <input id="t-x0" name="t_x0" type="text" value="0" style="text-align:center">
+                  <button type="button" class="btn" id="btn-x0-zero" title="x₀ = 0 (Makloren)">x₀=0</button>
+                </div>
+              </div>
+
+              <div class="nrow" style="flex:none">
+                <button class="btn" type="button" id="t-n-minus" aria-label="n di kemeytiw">−</button>
+                <div class="field" style="width:110px">
+                  <label for="t-n" id="lbl-t-n">Dáreje n</label>
+                  <input id="t-n" name="t_n" type="number" step="1" min="1" max="15" value="5">
+                </div>
+                <button class="btn" type="button" id="t-n-plus" aria-label="n di arttırıw">+</button>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn primary" type="submit" id="solve-taylor">Esaplaw</button>
+              <p class="err" id="t-err" role="alert"></p>
+            </div>
+          </form>
+
+          <!-- Taylor Solution Display -->
+          <article class="card raised" id="taylor-result" aria-live="polite" aria-labelledby="h-taylor-res">
+            <h3 id="h-taylor-res">Sheshim</h3>
+            <div id="taylor-res-body" style="display:flex;flex-direction:column;gap:22px"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Section 3: Cheat Sheet -->
       <section id="sec-cheatsheet" style="display:none;flex-direction:column;gap:22px">
         <div class="task-head">
           <h2 id="h-cheatsheet-title">Standart tuwındılar kestesi</h2>
@@ -109,7 +179,7 @@
         <div id="cheatsheet-content"></div>
       </section>
 
-      <!-- Section 3: Practical Examples -->
+      <!-- Section 4: Practical Examples -->
       <section id="sec-examples" style="display:none;flex-direction:column;gap:22px">
         <div class="task-head">
           <h2 id="h-examples-title">Ameliy mısallar toplamı</h2>

@@ -1,12 +1,14 @@
 export default {
   title: 'Hosila Hisoblagich',
-  subtitle: 'Istalgan funksiyaning n-tartibli hosilasi',
+  subtitle: 'Istalgan funksiyaning n-tartibli hosilasi va Teylor qatori',
   themeToggle: 'Kunduzgi yoki tungi rejimni almashtirish',
   langSelect: 'Tilni tanlash',
 
   tabs: {
     hosila: 'Hosila',
     hosilaSub: 'n-tartibli',
+    taylor: 'Teylor & Makloren',
+    taylorSub: 'Darajali qator',
     cheatsheet: 'Formulalar jadvali',
     cheatsheetSub: 'Qoidalar',
     examples: 'Namunalar',
@@ -16,11 +18,17 @@ export default {
   taskTitle: 'n-tartibli hosila hisoblansin',
   taskDesc: 'Funksiyani yozing, hosila tartibi n ni kiriting. Sayt qadamlarni va n bo‘yicha umumiy formulani chiqaradi.',
 
+  taylorTaskTitle: 'Teylor va Makloren qatori formulasi',
+  taylorTaskDesc: 'Funksiyani x₀ nuqta atrofida Teylor (yoki x₀ = 0 da Makloren) darajali qatoriga yoying. Har bir hosila va koeffitsiyent qadamma-qadam chiqariladi.',
+
   formTitle: 'Funksiya',
   placeholder: 'masalan: (4x+7)/(2x+3)',
+  taylorPlaceholder: 'masalan: sin(x) yoki e^x',
   ariaExpr: 'Funksiya y(x)',
   previewAria: 'Funksiya ko‘rinishi',
   orderLabel: 'Hosila tartibi n',
+  centerLabel: 'Yoyilma markazi x₀',
+  maclaurinQuickBtn: 'Makloren (x₀ = 0)',
   btnCalc: 'Hisoblash',
   btnDecreaseN: 'n ni kamaytirish',
   btnIncreaseN: 'n ni oshirish',
@@ -53,6 +61,19 @@ export default {
   copyLatex: 'LaTeX nusxalash',
   copied: 'Nusxalandi',
   copyFail: 'Nusxalab bo‘lmadi',
+
+  // Taylor / Maclaurin
+  taylorPolyTitle: (isMaclaurin, n) => isMaclaurin ? `${n}-darajali Makloren ko‘phadi P_${n}(x)` : `${n}-darajali Teylor ko‘phadi P_${n}(x)`,
+  peanoTitle: 'Peano qoldiqli to‘liq yoyilma',
+  stepsTableTitle: 'Hosilalar va koeffitsiyentlar jadvali',
+  standardSeriesTitle: 'Standart umumiy Makloren qatori',
+  convergenceRange: 'Yaqinlashish oralig‘i: ',
+  thOrder: 'k',
+  thDeriv: 'f⁽ᵏ⁾(x)',
+  thVal: 'f⁽ᵏ⁾(x₀)',
+  thFact: 'k!',
+  thCoef: 'a_k = f⁽ᵏ⁾(x₀)/k!',
+  thTerm: 'Had',
 
   casNote: 'Bu funksiyada ko‘paytma, murakkab ichki funksiya yoki shunga o‘xshash tuzilma bor, shuning uchun n bo‘yicha umumiy formula chiqarilmadi. Hosilalar ketma-ket differensiallash bilan hisoblandi.',
   casMaxWarn: (max) => `Bunday funksiya uchun n ${max} dan oshmasligi kerak. n ni kamaytiring.`,
