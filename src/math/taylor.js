@@ -2,9 +2,9 @@ import nerdamer from 'nerdamer';
 import 'nerdamer/Calculus.js';
 
 import { parse } from './parser.js';
-import { toTex, toNerd, constVal } from './ast.js';
+import { toTex, toNerd } from './ast.js';
+import { analyze } from './engine.js';
 import { factorial } from './formula.js';
-import { F, abs, fTex } from './fraction.js';
 
 const T = String.raw;
 
@@ -15,7 +15,7 @@ export const STANDARD_MACLAURIN = [
   {
     match: (expr) => /^e\^(\(?x\)?)|\bexp\(x\)$/.test(expr.replace(/\s+/g, '')),
     name: 'e^x',
-    general: T`\sum_{k=0}^{\infty} \frac{x^k}{k!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \dots`,
+    general: T`\sum_{n=0}^{\infty} \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \dots + \frac{x^n}{n!} + \dots`,
     convergence: T`x \in (-\infty, +\infty)`
   },
   {
@@ -33,19 +33,19 @@ export const STANDARD_MACLAURIN = [
   {
     match: (expr) => /^(ln|log)\(1\+x\)$/.test(expr.replace(/\s+/g, '')),
     name: '\\ln(1+x)',
-    general: T`\sum_{k=1}^{\infty} \frac{(-1)^{k-1} x^k}{k} = x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} + \dots`,
+    general: T`\sum_{n=1}^{\infty} \frac{(-1)^{n-1} x^n}{n} = x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} + \dots`,
     convergence: T`x \in (-1, 1]`
   },
   {
     match: (expr) => /^1\/\(1-x\)$/.test(expr.replace(/\s+/g, '')),
     name: '\\frac{1}{1-x}',
-    general: T`\sum_{k=0}^{\infty} x^k = 1 + x + x^2 + x^3 + \dots`,
+    general: T`\sum_{n=0}^{\infty} x^n = 1 + x + x^2 + x^3 + \dots`,
     convergence: T`|x| < 1`
   },
   {
     match: (expr) => /^1\/\(1\+x\)$/.test(expr.replace(/\s+/g, '')),
     name: '\\frac{1}{1+x}',
-    general: T`\sum_{k=0}^{\infty} (-1)^k x^k = 1 - x + x^2 - x^3 + \dots`,
+    general: T`\sum_{n=0}^{\infty} (-1)^n x^n = 1 - x + x^2 - x^3 + \dots`,
     convergence: T`|x| < 1`
   },
   {
@@ -68,88 +68,54 @@ export const STANDARD_MACLAURIN = [
   }
 ];
 
-/**
- * Format linear binomial factor (x - x0)^k in LaTeX
- */
-function formatBinomialPower(x0Nerd, k) {
-  if (k === 0) return '';
-  const isZero = x0Nerd === '0' || Number(x0Nerd) === 0;
+function cleanNerdTeX(tex) {
+  if (!tex) return '0';
+  return tex
+    .replace(/\\mathrm\{sin\}/g, '\\sin')
+    .replace(/\\mathrm\{cos\}/g, '\\cos')
+    .replace(/\\mathrm\{tan\}/g, '\\tan')
+    .replace(/\\mathrm\{log\}/g, '\\ln')
+    .replace(/\\mathrm\{exp\}/g, '\\exp')
+    .replace(/\\left\(/g, '(')
+    .replace(/\\right\)/g, ')')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
+function formatBinomialPower(x0Clean, k) {
+  if (k === 0) return '';
+  const isZero = x0Clean === '0' || Number(x0Clean) === 0;
   if (isZero) {
     return k === 1 ? 'x' : `x^{${k}}`;
   }
-
-  // Check if x0 is negative
+  const numX0 = Number(x0Clean);
   let inner;
-  const numX0 = Number(x0Nerd);
   if (!isNaN(numX0) && numX0 < 0) {
     inner = `x + ${Math.abs(numX0)}`;
   } else if (!isNaN(numX0) && numX0 > 0) {
     inner = `x - ${numX0}`;
   } else {
-    inner = `x - ${x0Nerd}`;
+    inner = `x - ${x0Clean}`;
   }
-
   return k === 1 ? `(${inner})` : `(${inner})^{${k}}`;
 }
 
-/**
- * Assemble coefficient and binomial into a clean LaTeX term
- */
-function assembleTerm(coefObj, x0Nerd, k) {
-  const coefText = coefObj.text();
-  if (coefText === '0' || Number(coefText) === 0) {
-    return { isZero: true, sign: '+', tex: '0' };
+function formatVal(tex) {
+  let s = cleanNerdTeX(tex);
+  // Simplify -\frac{\sin(2)}{2} -> -\frac{1}{2}\sin 2
+  const fracTrig = /^(-?)\\frac\{(\\sin|\\cos|\\ln)\(([^)]+)\)\}\{(\d+)\}$/.exec(s);
+  if (fracTrig) {
+    const sign = fracTrig[1] ? '-' : '';
+    const fn = fracTrig[2];
+    const arg = fracTrig[3];
+    const den = fracTrig[4];
+    return `${sign}\\frac{1}{${den}} ${fn} ${arg}`;
   }
-
-  const binom = formatBinomialPower(x0Nerd, k);
-  const isNeg = coefText.startsWith('-');
-  const absCoefObj = isNeg ? nerdamer(`-(${coefText})`).evaluate() : coefObj;
-  const absCoefText = absCoefObj.text();
-  const absCoefTex = absCoefObj.toTeX();
-
-  if (k === 0) {
-    return {
-      isZero: false,
-      sign: isNeg ? '-' : '+',
-      tex: absCoefTex
-    };
-  }
-
-  // If abs coefficient is 1
-  if (absCoefText === '1' || Number(absCoefText) === 1) {
-    return {
-      isZero: false,
-      sign: isNeg ? '-' : '+',
-      tex: binom
-    };
-  }
-
-  // If coefficient is a fraction e.g. 1/6, 3/4
-  if (absCoefTex.includes('\\frac')) {
-    // Format as \frac{(x-x0)^k}{d} if numerator is 1
-    const match = /\\frac\{1\}\{([^}]+)\}/.exec(absCoefTex);
-    if (match) {
-      const den = match[1];
-      return {
-        isZero: false,
-        sign: isNeg ? '-' : '+',
-        tex: T`\frac{${binom}}{${den}}`
-      };
-    }
-  }
-
-  // General: coef * binom
-  return {
-    isZero: false,
-    sign: isNeg ? '-' : '+',
-    tex: `${absCoefTex} ${binom}`
-  };
+  // Simplify \sin(2) -> \sin 2, \cos(2) -> \cos 2
+  s = s.replace(/(\\sin|\\cos|\\ln)\((\d+)\)/g, '$1 $2');
+  return s;
 }
 
-/**
- * Main Taylor/Maclaurin series computation
- */
 export function computeTaylorSeries(rawExpr, rawX0 = '0', maxN = 5) {
   const n = Math.min(15, Math.max(1, parseInt(maxN, 10) || 5));
   let ast;
@@ -165,6 +131,16 @@ export function computeTaylorSeries(rawExpr, rawX0 = '0', maxN = 5) {
   let x0Clean = String(rawX0 || '0').trim();
   if (!x0Clean) x0Clean = '0';
   x0Clean = x0Clean.replace(/pi/g, 'pi').replace(/π/g, 'pi');
+  const isMaclaurin = x0Clean === '0' || Number(x0Clean) === 0;
+
+  // Analyze general formula if possible (from our formula engine)
+  let generalInfo = null;
+  try {
+    const an = analyze(rawExpr);
+    if (an && an.formula && an.terms && an.terms.length > 0) {
+      generalInfo = an;
+    }
+  } catch (e) {}
 
   let curNerd;
   try {
@@ -173,38 +149,90 @@ export function computeTaylorSeries(rawExpr, rawX0 = '0', maxN = 5) {
     return { error: `Nerdamer ifodani tahlil qila olmadi: ${e.message}` };
   }
 
-  const isMaclaurin = x0Clean === '0' || Number(x0Clean) === 0;
   const steps = [];
-  const termsList = [];
+  const derivatives = [];
+  const valuesAtX0 = [];
+  const unreducedParts = [];
+  const polyTerms = [];
 
   for (let k = 0; k <= n; k++) {
-    const derivTex = curNerd.toTeX();
-    const factBig = factorial(k);
-    const factStr = factBig.toString();
+    // 1. Derivative f^(k)(x)
+    let derivTex;
+    if (generalInfo && generalInfo.formula && k >= 1) {
+      try {
+        const atK = generalInfo.formula.at(k);
+        derivTex = atK.tex;
+      } catch (e) {
+        derivTex = cleanNerdTeX(curNerd.toTeX());
+      }
+    } else {
+      derivTex = cleanNerdTeX(curNerd.toTeX());
+    }
 
-    let valObj;
+    if (k >= 1 && k <= Math.min(n, 4)) {
+      const primes = k <= 3 ? "'".repeat(k) : `^{(${k})}`;
+      derivatives.push({
+        order: k,
+        tex: `f${primes}(x) = ${derivTex}`
+      });
+    }
+
+    // 2. Value at x0: f^(k)(x0)
     let valTex;
     try {
-      valObj = nerdamer(curNerd.text()).sub('x', x0Clean).evaluate();
-      valTex = valObj.toTeX();
+      const subbed = nerdamer(curNerd.text()).sub('x', x0Clean);
+      valTex = formatVal(subbed.toTeX());
     } catch (e) {
-      valObj = nerdamer('0');
       valTex = '0';
     }
+
+    if (k <= Math.min(n, 4)) {
+      const primes = k === 0 ? '' : (k <= 3 ? "'".repeat(k) : `^{(${k})}`);
+      valuesAtX0.push({
+        order: k,
+        tex: `f${primes}(${x0Clean}) = ${valTex}`
+      });
+    }
+
+    // 3. Coefficient a_k = f^(k)(x0) / k!
+    const factBig = factorial(k);
+    const factStr = factBig.toString();
 
     let coefObj;
     let coefTex;
     try {
-      coefObj = nerdamer(`(${valObj.text()}) / ${factStr}`).evaluate();
-      coefTex = coefObj.toTeX();
+      coefObj = nerdamer(`(${nerdamer(curNerd.text()).sub('x', x0Clean).text()}) / ${factStr}`).evaluate();
+      coefTex = formatVal(coefObj.toTeX());
     } catch (e) {
-      coefObj = nerdamer('0');
       coefTex = '0';
     }
 
-    const termData = assembleTerm(coefObj, x0Clean, k);
-    if (!termData.isZero) {
-      termsList.push(termData);
+    const binom = formatBinomialPower(x0Clean, k);
+
+    // 4. Unreduced term over k!: \frac{f^(k)(x0)}{k!} (x-x0)^k
+    if (k === 0) {
+      unreducedParts.push({ k: 0, tex: valTex });
+    } else {
+      const isNeg = valTex.startsWith('-');
+      const absValTex = isNeg ? valTex.slice(1).trim() : valTex;
+      const xPart = binom ? (binom.startsWith('(') ? binom : `\\, ${binom}`) : '';
+      const fracPart = T`\frac{${valTex}}{${k}!}${xPart}`;
+      unreducedParts.push({ k, tex: fracPart });
+    }
+
+    // 5. Simplified term for P_n(x)
+    if (coefTex !== '0' && coefTex !== '0.0') {
+      const isNeg = coefTex.startsWith('-');
+      const absCoef = isNeg ? coefTex.slice(1).trim() : coefTex;
+      let piece;
+      if (k === 0) {
+        piece = absCoef;
+      } else if (absCoef === '1') {
+        piece = binom;
+      } else {
+        piece = `${absCoef}${binom.startsWith('(') ? '' : '\\,'}${binom}`;
+      }
+      polyTerms.push({ isNeg, tex: piece });
     }
 
     steps.push({
@@ -213,7 +241,7 @@ export function computeTaylorSeries(rawExpr, rawX0 = '0', maxN = 5) {
       valTex,
       factStr,
       coefTex,
-      termTex: termData.isZero ? '0' : (termData.sign === '-' ? '-' : '') + termData.tex
+      termTex: coefTex === '0' ? '0' : `${coefTex}${binom}`
     });
 
     if (k < n) {
@@ -225,27 +253,79 @@ export function computeTaylorSeries(rawExpr, rawX0 = '0', maxN = 5) {
     }
   }
 
-  // Construct polynomial P_n(x) string
+  // General n-th derivative and value at x0
+  let generalDerivTex = null;
+  let generalValAtX0Tex = null;
+  let generalSummationBody = null;
+
+  if (generalInfo && generalInfo.formula && generalInfo.formula.general) {
+    const rawGen = generalInfo.formula.general.replace(/^y\^\{\(n\)\}=/, '');
+    generalDerivTex = `f^{(n)}(x) = ${rawGen}`;
+
+    // Evaluate general formula at x = x0
+    // e.g. (1/2)^n cos( (x/2+2) + n*pi/2 ) at x=0 -> (1/2)^n cos(2 + n*pi/2)
+    let atX0 = rawGen;
+    if (x0Clean === '0') {
+      atX0 = atX0
+        .replace(/\\frac\{x\}\{(\d+)\}/g, '0')
+        .replace(/x/g, '0')
+        .replace(/0\s*\+\s*/g, '')
+        .replace(/\s*\+\s*0/g, '');
+    }
+    generalValAtX0Tex = `f^{(n)}(${x0Clean}) = ${atX0}`;
+    generalSummationBody = T`\frac{${atX0}}{n!} ${formatBinomialPower(x0Clean, 'n')}`;
+  }
+
+  // Construct unreduced expansion formula:
+  // f(x) = f(0) + \frac{f'(0)}{1!}x + \frac{f''(0)}{2!}x^2 + ... + \frac{f^(n)(0)}{n!}x^n
+  const patternTex = isMaclaurin
+    ? T`f(x) = f(0) + \frac{f'(0)}{1!} x + \frac{f''(0)}{2!} x^2 + \dots + \frac{f^{(n)}(0)}{n!} x^n + \dots`
+    : T`f(x) = f(${x0Clean}) + \frac{f'(${x0Clean})}{1!} (x-${x0Clean}) + \frac{f''(${x0Clean})}{2!} (x-${x0Clean})^2 + \dots + \frac{f^{(n)}(${x0Clean})}{n!} (x-${x0Clean})^n + \dots`;
+
+  // Build the notebook-style substitution line:
+  // f(x) = cos 2 + \frac{-1/2 sin 2}{1!} x + \frac{-1/4 cos 2}{2!} x^2 + ... + \frac{1/2^n cos(2 + n*pi/2)}{n!} x^n
+  let unreducedLine = 'f(x) = ';
+  unreducedParts.slice(0, Math.min(unreducedParts.length, 4)).forEach((p, idx) => {
+    if (idx === 0) {
+      unreducedLine += p.tex;
+    } else {
+      unreducedLine += ' + ' + p.tex;
+    }
+  });
+
+  if (generalSummationBody) {
+    unreducedLine += ` + \\dots + ${generalSummationBody}`;
+  } else if (unreducedParts.length > 4) {
+    unreducedLine += ` + \\dots + ${unreducedParts[unreducedParts.length - 1].tex}`;
+  }
+
+  // Construct series summation (Sigma notation)
+  let seriesSummationTex = null;
+  if (generalSummationBody) {
+    seriesSummationTex = T`f(x) = \sum_{n=0}^{\infty} ${generalSummationBody}`;
+  } else {
+    seriesSummationTex = isMaclaurin
+      ? T`f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(0)}{n!} x^n`
+      : T`f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(${x0Clean})}{n!} (x - ${x0Clean})^n`;
+  }
+
+  // Polynomial P_n(x) string
   let polyTex = '';
-  if (!termsList.length) {
+  if (!polyTerms.length) {
     polyTex = '0';
   } else {
-    termsList.forEach((t, i) => {
+    polyTerms.forEach((t, i) => {
       if (i === 0) {
-        polyTex += (t.sign === '-' ? '-' : '') + t.tex;
+        polyTex += (t.isNeg ? '-' : '') + t.tex;
       } else {
-        polyTex += (t.sign === '-' ? ' - ' : ' + ') + t.tex;
+        polyTex += (t.isNeg ? ' - ' : ' + ') + t.tex;
       }
     });
   }
 
-  // Binomial for Peano remainder
   const peanoRem = isMaclaurin ? `o(x^{${n}})` : `o((x - ${x0Clean})^{${n}})`;
-  const lagrangeRem = isMaclaurin
-    ? T`\frac{f^{(${n + 1})}(\xi)}{${n + 1}!} x^{${n + 1}}`
-    : T`\frac{f^{(${n + 1})}(\xi)}{${n + 1}!} (x - ${x0Clean})^{${n + 1}}`;
+  const peanoEquation = `f(x) = ${polyTex} + ${peanoRem}`;
 
-  // Check matching standard series
   const matchedStandard = STANDARD_MACLAURIN.find((s) => isMaclaurin && s.match(rawExpr));
 
   return {
@@ -253,10 +333,16 @@ export function computeTaylorSeries(rawExpr, rawX0 = '0', maxN = 5) {
     origTex,
     x0: x0Clean,
     n,
-    steps,
+    derivatives,
+    generalDerivTex,
+    valuesAtX0,
+    generalValAtX0Tex,
+    patternTex,
+    unreducedLine,
+    seriesSummationTex,
     polyTex,
-    peanoEquation: `f(x) = ${polyTex} + ${peanoRem}`,
-    lagrangeRemainder: lagrangeRem,
+    peanoEquation,
+    steps,
     matchedStandard
   };
 }

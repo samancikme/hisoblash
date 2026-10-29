@@ -19,11 +19,11 @@ export default {
   taskDesc: 'Введите функцию и порядок производной n. Сервис выведет шаги решения и общую формулу по n.',
 
   taylorTaskTitle: 'Формула и ряд Тейлора / Маклорена',
-  taylorTaskDesc: 'Разложение функции в степенной ряд Тейлора в окрестности точки x₀ (или Маклорена при x₀ = 0). Выводятся все производные и шаги вычисления.',
+  taylorTaskDesc: 'Разложение функции в степенной ряд Тейлора в окрестности точки x₀ (или Маклорена при x₀ = 0). Выводятся все производные и шаги вычисления в классическом порядке.',
 
   formTitle: 'Функция',
   placeholder: 'например: (4x+7)/(2x+3)',
-  taylorPlaceholder: 'например: sin(x) или e^x',
+  taylorPlaceholder: 'например: cos(x/2+2) или sin(x)',
   ariaExpr: 'Функция y(x)',
   previewAria: 'Предпросмотр функции',
   orderLabel: 'Порядок производной n',
@@ -36,7 +36,7 @@ export default {
   helpSummary: 'Как записывать функцию?',
   helpMult: 'Умножение: <code>2x</code>, <code>3(x+1)</code> или <code>2*x</code>',
   helpPow: 'Степень: <code>x^3</code>, <code>e^(3x+1)</code>, <code>5^(2x+3)</code>',
-  helpFrac: 'Дробь: <code>(4x+7)/(2x+3)</code>, <code>4/x</code>, <code>x/(2(3x+2))</code>',
+  helpFrac: 'Дробь: <code>(4x+7)/(2x+3)</code>, <code>4/x</code>, <code>cos(x/2+2)</code>',
   helpRoot: 'Корень: <code>sqrt(x)</code>, <code>sqrt(e^(3x+1))</code>, <code>root(e^(7x-1), 5)</code>',
   helpFuncs: 'Функции: <code>sin</code>, <code>cos</code>, <code>tan</code>, <code>ln</code>, <code>lg</code>, <code>exp</code>',
   helpLogPi: '<code>lg</code> десятичный логарифм, <code>ln</code> и <code>log</code> натуральный логарифм. <code>pi</code> число π',
@@ -62,7 +62,13 @@ export default {
   copied: 'Скопировано',
   copyFail: 'Не удалось скопировать',
 
-  // Taylor / Maclaurin
+  // Taylor / Maclaurin steps matching notebook
+  tStep1: 'Шаг 1. Находим последовательные производные функции',
+  tStep2: (x0) => `Шаг 2. Значения производных в точке x = ${x0}`,
+  tStep3: 'Шаг 3. Подстановка в формулу разложения (как в тетради)',
+  tStep4: 'Шаг 4. Представление ряда в виде суммы (∑)',
+  tStep5: (n) => `Шаг 5. Многочлен Тейлора степени ${n} и остаточный член`,
+
   taylorPolyTitle: (isMaclaurin, n) => isMaclaurin ? `Многочлен Маклорена степени ${n}: P_${n}(x)` : `Многочлен Тейлора степени ${n}: P_${n}(x)`,
   peanoTitle: 'Формула с остаточным членом в форме Пеано',
   stepsTableTitle: 'Таблица производных и коэффициентов',

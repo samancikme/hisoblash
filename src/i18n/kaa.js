@@ -19,11 +19,11 @@ export default {
   taskDesc: 'Funktsiyanı jazıń, tuwındı tártibi n di kiritiń. Sayt qádemlerdi hám n boyınsha ulıwma formulanı shıǵaradı.',
 
   taylorTaskTitle: 'Teylor hám Makloren qatarı formulası',
-  taylorTaskDesc: 'Funktsiyanı x₀ noqatı átirapında Teylor (yamasa x₀ = 0 da Makloren) dárejeli qatarına ayıriń. Hár bir tuwındı hám koeffitsient qádembe-qádem shıǵarıladı.',
+  taylorTaskDesc: 'Funktsiyanı x₀ noqatı átirapında Teylor (yamasa x₀ = 0 da Makloren) dárejeli qatarına ayıriń. Hár bir tuwındı hám koeffitsient dápterdegi tártipte shıǵarıladı.',
 
   formTitle: 'Funktsiya',
   placeholder: 'mısalı: (4x+7)/(2x+3)',
-  taylorPlaceholder: 'mısalı: sin(x) yamasa e^x',
+  taylorPlaceholder: 'mısalı: cos(x/2+2) yamasa sin(x)',
   ariaExpr: 'Funktsiya y(x)',
   previewAria: 'Funktsiyanıń kórinisi',
   orderLabel: 'Tuwındı tártibi n',
@@ -36,7 +36,7 @@ export default {
   helpSummary: 'Funktsiya qalay jazıladı?',
   helpMult: 'Kóbeytiw: <code>2x</code>, <code>3(x+1)</code> yamasa <code>2*x</code>',
   helpPow: 'Dáreje: <code>x^3</code>, <code>e^(3x+1)</code>, <code>5^(2x+3)</code>',
-  helpFrac: 'Bólshek: <code>(4x+7)/(2x+3)</code>, <code>4/x</code>, <code>x/(2(3x+2))</code>',
+  helpFrac: 'Bólshek: <code>(4x+7)/(2x+3)</code>, <code>4/x</code>, <code>cos(x/2+2)</code>',
   helpRoot: 'Túbir: <code>sqrt(x)</code>, <code>sqrt(e^(3x+1))</code>, <code>root(e^(7x-1), 5)</code>',
   helpFuncs: 'Funktsiyalar: <code>sin</code>, <code>cos</code>, <code>tan</code>, <code>ln</code>, <code>lg</code>, <code>exp</code>',
   helpLogPi: '<code>lg</code> onlıq logarifm, <code>ln</code> hám <code>log</code> natural logarifm. <code>pi</code> sanı π',
@@ -62,7 +62,13 @@ export default {
   copied: 'Nusqalandı',
   copyFail: 'Nusqalap bolmadı',
 
-  // Taylor / Maclaurin
+  // Taylor / Maclaurin steps matching notebook
+  tStep1: '1-qádem. Funktsiyanıń tuwındıların tabamız',
+  tStep2: (x0) => `2-qádem. x = ${x0} noqatındaǵı tuwındılar mánisi`,
+  tStep3: '3-qádem. Jayıw formulasına qoyamız (Dápterdegi kórinis)',
+  tStep4: '4-qádem. Qatardıń ulıwma qosındı kórinisi (∑)',
+  tStep5: (n) => `5-qádem. n = ${n} bolǵandaǵı kóp aǵzalı hám qaldıq aǵza`,
+
   taylorPolyTitle: (isMaclaurin, n) => isMaclaurin ? `${n}-dárejeli Makloren kóp aǵzalısı P_${n}(x)` : `${n}-dárejeli Teylor kóp aǵzalısı P_${n}(x)`,
   peanoTitle: 'Peano qaldıqlı tolıq jayıw',
   stepsTableTitle: 'Tuwındılar hám koeffitsientler kestesi',

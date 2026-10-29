@@ -413,57 +413,54 @@ function renderTaylorResult(res) {
     parent.append(r);
   }
 
-  // 1. Theoretical definition box (matches user's screenshot!)
-  const thBox = h('div', 'theory-box');
-  const thH4 = h(
-    'h4',
-    null,
-    res.isMaclaurin
-      ? 'Makloren qatori va formulasi (x₀ = 0)'
-      : `Teylor qatori va formulasi (x₀ = ${res.x0})`
-  );
-  thBox.appendChild(thH4);
+  // 0. Given function
+  const b0 = block(t('givenFunc'));
+  row(b0, `f(x) = ${res.origTex}`);
 
-  const thMath = h('div', 'math');
-  const generalFormulaTex = res.isMaclaurin
-    ? String.raw`f(x) = f(0) + \frac{f'(0)}{1!} x + \frac{f''(0)}{2!} x^2 + \dots + \frac{f^{(n)}(0)}{n!} x^n + R_n(x) = \sum_{k=0}^{n} \frac{f^{(k)}(0)}{k!} x^k + R_n(x)`
-    : String.raw`f(x) = f(x_0) + \frac{f'(x_0)}{1!} (x - x_0) + \dots + \frac{f^{(n)}(x_0)}{n!} (x - x_0)^n + R_n(x) = \sum_{k=0}^{n} \frac{f^{(k)}(x_0)}{k!} (x - x_0)^k + R_n(x)`;
-  renderMath(thMath, generalFormulaTex, true);
-  thBox.appendChild(thMath);
-  box.appendChild(thBox);
-
-  // 2. Taylor / Maclaurin Polynomial P_n(x)
-  const bPoly = block(t('taylorPolyTitle', res.isMaclaurin, res.n), 'answer');
-  const polyStr = `P_{${res.n}}(x) = ${res.polyTex}`;
-  row(bPoly, polyStr, 'big');
-  copyBtn(bPoly, polyStr);
-
-  // 3. Full Peano Remainder Equation
-  const bPeano = block(t('peanoTitle'));
-  row(bPeano, res.peanoEquation, 'big');
-
-  // 4. Standard Maclaurin match if exists
-  if (res.matchedStandard) {
-    const bStd = block(t('standardSeriesTitle'));
-    bStd.append(
-      h(
-        'p',
-        null,
-        `${t('givenFunc')}: ${res.matchedStandard.name}. ${t('convergenceRange')}`
-      )
-    );
-    const spConv = h('span', 'inline-math');
-    bStd.appendChild(spConv);
-    renderMath(spConv, res.matchedStandard.convergence, false);
-    row(bStd, res.matchedStandard.general, 'big');
+  // 1. Step 1: Funksiyaning hosilalari
+  const b1 = block(t('tStep1'));
+  if (res.derivatives && res.derivatives.length) {
+    res.derivatives.forEach((d) => {
+      row(b1, d.tex);
+    });
+  }
+  if (res.generalDerivTex) {
+    row(b1, res.generalDerivTex, 'big');
   }
 
-  // 5. Steps & Derivatives Table
+  // 2. Step 2: x = x0 nuqtadagi hosilalar qiymati
+  const b2 = block(t('tStep2', res.x0));
+  if (res.valuesAtX0 && res.valuesAtX0.length) {
+    res.valuesAtX0.forEach((v) => {
+      row(b2, v.tex);
+    });
+  }
+  if (res.generalValAtX0Tex) {
+    row(b2, res.generalValAtX0Tex, 'big');
+  }
+
+  // 3. Step 3: Makloren / Teylor formulasiga qo'yish (Daftardagi ko'rinish)
+  const b3 = block(t('tStep3'), 'answer');
+  row(b3, res.patternTex);
+  row(b3, res.unreducedLine, 'big');
+  copyBtn(b3, res.unreducedLine);
+
+  // 4. Step 4: Qatorning umumiy yig'indi ko'rinishi (∑)
+  const b4 = block(t('tStep4'), 'answer');
+  row(b4, res.seriesSummationTex, 'big');
+  copyBtn(b4, res.seriesSummationTex);
+
+  // 5. Step 5: Soddalashtirilgan ko'phad va qoldiq had
+  const b5 = block(t('tStep5', res.n));
+  const polyStr = `P_{${res.n}}(x) = ${res.polyTex}`;
+  row(b5, polyStr, 'big');
+  row(b5, res.peanoEquation);
+
+  // 6. Steps & Derivatives Table
   const bSteps = block(t('stepsTableTitle'));
   const tableWrap = h('div', 'taylor-table-wrap');
   const tbl = h('table', 'taylor-table');
 
-  // Header row
   const thead = h('thead');
   const trH = h('tr');
   ['k', 'f^{(k)}(x)', `f^{(k)}(${res.x0})`, 'k!', 'a_k = \\frac{f^{(k)}(x_0)}{k!}', 'Had'].forEach(
@@ -476,11 +473,9 @@ function renderTaylorResult(res) {
   thead.appendChild(trH);
   tbl.appendChild(thead);
 
-  // Body rows
   const tbody = h('tbody');
   res.steps.forEach((st) => {
     const tr = h('tr');
-
     const tdK = h('td', null, String(st.k));
     const tdDeriv = h('td');
     renderMath(tdDeriv, st.derivTex, false);
@@ -502,6 +497,22 @@ function renderTaylorResult(res) {
   tbl.appendChild(tbody);
   tableWrap.appendChild(tbl);
   bSteps.appendChild(tableWrap);
+
+  // 7. Standard Maclaurin match if exists
+  if (res.matchedStandard) {
+    const bStd = block(t('standardSeriesTitle'));
+    bStd.append(
+      h(
+        'p',
+        null,
+        `${t('givenFunc')}: ${res.matchedStandard.name}. ${t('convergenceRange')}`
+      )
+    );
+    const spConv = h('span', 'inline-math');
+    bStd.appendChild(spConv);
+    renderMath(spConv, res.matchedStandard.convergence, false);
+    row(bStd, res.matchedStandard.general, 'big');
+  }
 }
 
 /* ----------------- Update & Live Math (Hosila) ----------------- */

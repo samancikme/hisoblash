@@ -12,6 +12,15 @@ export function linInt(A, B) {
 }
 
 export function linTex(a, b) {
+  if (b.n === 0n) {
+    if (a.d === 1n) return a.n === 1n ? 'x' : (a.n === -1n ? '-x' : `${a.n}x`);
+    return a.n === 1n ? T`\frac{x}{${a.d}}` : (a.n === -1n ? T`-\frac{x}{${a.d}}` : T`\frac{${a.n}x}{${a.d}}`);
+  }
+  if (b.d === 1n && a.d > 1n) {
+    const aStr = a.n === 1n ? T`\frac{x}{${a.d}}` : (a.n === -1n ? T`-\frac{x}{${a.d}}` : T`\frac{${a.n}x}{${a.d}}`);
+    const bStr = b.n > 0n ? `+${b.n}` : `${b.n}`;
+    return aStr + bStr;
+  }
   const D = lcm(a.d, b.d);
   const num = linInt(a.n * (D / a.d), b.n * (D / b.d));
   return D === 1n ? num : T`\frac{${num}}{${D}}`;

@@ -19,11 +19,11 @@ export default {
   taskDesc: 'Funksiyani yozing, hosila tartibi n ni kiriting. Sayt qadamlarni va n bo‘yicha umumiy formulani chiqaradi.',
 
   taylorTaskTitle: 'Teylor va Makloren qatori formulasi',
-  taylorTaskDesc: 'Funksiyani x₀ nuqta atrofida Teylor (yoki x₀ = 0 da Makloren) darajali qatoriga yoying. Har bir hosila va koeffitsiyent qadamma-qadam chiqariladi.',
+  taylorTaskDesc: 'Funksiyani x₀ nuqta atrofida Teylor (yoki x₀ = 0 da Makloren) darajali qatoriga yoying. Har bir hosila va koeffitsiyent daftardagi tartibda chiqariladi.',
 
   formTitle: 'Funksiya',
   placeholder: 'masalan: (4x+7)/(2x+3)',
-  taylorPlaceholder: 'masalan: sin(x) yoki e^x',
+  taylorPlaceholder: 'masalan: cos(x/2+2) yoki sin(x)',
   ariaExpr: 'Funksiya y(x)',
   previewAria: 'Funksiya ko‘rinishi',
   orderLabel: 'Hosila tartibi n',
@@ -36,7 +36,7 @@ export default {
   helpSummary: 'Funksiya qanday yoziladi?',
   helpMult: 'Ko‘paytirish: <code>2x</code>, <code>3(x+1)</code> yoki <code>2*x</code>',
   helpPow: 'Daraja: <code>x^3</code>, <code>e^(3x+1)</code>, <code>5^(2x+3)</code>',
-  helpFrac: 'Kasr: <code>(4x+7)/(2x+3)</code>, <code>4/x</code>, <code>x/(2(3x+2))</code>',
+  helpFrac: 'Kasr: <code>(4x+7)/(2x+3)</code>, <code>4/x</code>, <code>cos(x/2+2)</code>',
   helpRoot: 'Ildiz: <code>sqrt(x)</code>, <code>sqrt(e^(3x+1))</code>, <code>root(e^(7x-1), 5)</code>',
   helpFuncs: 'Funksiyalar: <code>sin</code>, <code>cos</code>, <code>tan</code>, <code>ln</code>, <code>lg</code>, <code>exp</code>',
   helpLogPi: '<code>lg</code> o‘nli logarifm, <code>ln</code> va <code>log</code> natural logarifm. <code>pi</code> son π',
@@ -62,7 +62,13 @@ export default {
   copied: 'Nusxalandi',
   copyFail: 'Nusxalab bo‘lmadi',
 
-  // Taylor / Maclaurin
+  // Taylor / Maclaurin steps matching notebook
+  tStep1: '1-qadam. Funksiyaning hosilalarini topamiz',
+  tStep2: (x0) => `2-qadam. x = ${x0} nuqtadagi hosilalar qiymati`,
+  tStep3: '3-qadam. Yoyilma formulasiga qo‘yamiz (Daftardagi ko‘rinish)',
+  tStep4: '4-qadam. Qatorning umumiy yig‘indi ko‘rinishi (∑)',
+  tStep5: (n) => `5-qadam. n = ${n} bo‘lgandagi ko‘phad va qoldiq had`,
+
   taylorPolyTitle: (isMaclaurin, n) => isMaclaurin ? `${n}-darajali Makloren ko‘phadi P_${n}(x)` : `${n}-darajali Teylor ko‘phadi P_${n}(x)`,
   peanoTitle: 'Peano qoldiqli to‘liq yoyilma',
   stepsTableTitle: 'Hosilalar va koeffitsiyentlar jadvali',
