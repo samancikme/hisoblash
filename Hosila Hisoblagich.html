@@ -1,0 +1,1557 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hosila Hisoblagich</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Tuzilma: sarlavha, bo'limlar paneli, so'ng chapda funksiya kiritish va o'ngda yechim; pastda namunalar.
+   Telefonda hammasi bitta ustunga tushadi. Neumorphism: bitta yorug'lik manbai, bir xil fon, yumshoq soyalar. */
+:root {
+  --bg: #e3e7ed;
+  --sh-l: rgba(255, 255, 255, .95);
+  --sh-d: rgba(158, 169, 188, .72);
+  --fg: #29303c;
+  --muted: #566174;
+  --accent: #08706a;
+  --on-accent: #f2fffd;
+  --err: #a3361a;
+  --f-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body: 'Onest', 'Segoe UI', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  --off: 9px;
+  --blur: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #252931;
+    --sh-l: rgba(64, 71, 87, .8);
+    --sh-d: rgba(11, 13, 17, .82);
+    --fg: #e5e8ee;
+    --muted: #9fa8b7;
+    --accent: #55dccf;
+    --on-accent: #07201d;
+    --err: #ff9b7d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #252931;
+  --sh-l: rgba(64, 71, 87, .8);
+  --sh-d: rgba(11, 13, 17, .82);
+  --fg: #e5e8ee;
+  --muted: #9fa8b7;
+  --accent: #55dccf;
+  --on-accent: #07201d;
+  --err: #ff9b7d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 16px/1.55 var(--f-body);
+  padding-block: 20px 28px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  overflow-x: hidden;
+}
+.shell { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* neumorphism qurilish bloklari */
+.raised { box-shadow: var(--off) var(--off) var(--blur) var(--sh-d), calc(var(--off) * -1) calc(var(--off) * -1) var(--blur) var(--sh-l); }
+.raised-sm { box-shadow: 5px 5px 11px var(--sh-d), -5px -5px 11px var(--sh-l); }
+.inset { box-shadow: inset 5px 5px 10px var(--sh-d), inset -5px -5px 10px var(--sh-l); }
+
+.card { background: var(--bg); border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.card > h3 { font-size: 1.15rem; }
+
+.btn {
+  background: var(--bg); border: 0; border-radius: 14px; min-height: 44px; padding: 8px 16px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600;
+  box-shadow: 5px 5px 11px var(--sh-d), -5px -5px 11px var(--sh-l);
+  transition: box-shadow .15s ease, color .15s ease;
+}
+.btn:active, .btn[aria-pressed="true"] { box-shadow: inset 4px 4px 8px var(--sh-d), inset -4px -4px 8px var(--sh-l); }
+.btn.primary { color: var(--accent); }
+.btn.icon { width: 46px; padding: 0; border-radius: 50%; min-height: 46px; }
+.btn svg { width: 22px; height: 22px; }
+
+/* sarlavha */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 6px 4px; }
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.mark {
+  width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; flex: none;
+  font: 700 1.5rem/1 var(--f-display); color: var(--accent);
+}
+h1 { font-size: clamp(1.35rem, 4.6vw, 1.9rem); line-height: 1.15; }
+.sub { color: var(--muted); font-size: .88rem; }
+
+/* bo'limlar paneli */
+.tabs { display: flex; gap: 16px; overflow-x: auto; padding: 8px 10px 16px; margin: -8px -10px -8px; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { text-align: left; border: 0; background: var(--bg); border-radius: 16px; padding: 10px 18px; min-height: 52px; flex: none;
+  display: flex; flex-direction: column; justify-content: center; line-height: 1.25;
+  box-shadow: 5px 5px 11px var(--sh-d), -5px -5px 11px var(--sh-l); }
+.tab b { font-family: var(--f-display); font-size: 1rem; }
+.tab small { color: var(--muted); font-size: .78rem; }
+.tab[aria-current="page"] { box-shadow: inset 4px 4px 9px var(--sh-d), inset -4px -4px 9px var(--sh-l); }
+.tab[aria-current="page"] b { color: var(--accent); }
+.tab[aria-disabled="true"] { cursor: default; box-shadow: none; opacity: .7; border: 1.5px dashed var(--muted); }
+
+/* asosiy joylashuv */
+.task-head { display: flex; flex-direction: column; gap: 6px; padding: 0 4px; }
+.task-head h2 { font-size: clamp(1.25rem, 4vw, 1.6rem); }
+.task-head p { color: var(--muted); max-width: 62ch; }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; }
+.col { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+@media (min-width: 900px) {
+  .grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 28px; }
+  }
+
+/* forma */
+.hint { font: 500 .8rem var(--f-mono); color: var(--muted); overflow-wrap: anywhere; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field label { font-size: .8rem; color: var(--muted); font-weight: 500; }
+.field input, .field select {
+  width: 100%; min-height: 46px; border: 0; border-radius: 13px; padding: 8px 12px; background: var(--bg); font-weight: 600; font-size: 1.05rem;
+  font-variant-numeric: tabular-nums; box-shadow: inset 4px 4px 8px var(--sh-d), inset -4px -4px 8px var(--sh-l);
+}
+.field input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+.field input::-webkit-outer-spin-button, .field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.field input[aria-invalid="true"] { outline: 2px solid var(--err); outline-offset: 1px; }
+.field select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 34px; }
+.nrow { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.nrow .field { width: 120px; }
+.nrow .btn { width: 46px; padding: 0; font-size: 1.3rem; }
+.actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.err { color: var(--err); font-size: .9rem; min-height: 1.4em; }
+
+/* matematik ifodalar */
+.math { border-radius: 14px; padding: 12px 16px; font-size: 1.05rem; overflow-x: auto; overflow-y: hidden; min-width: 0; color: var(--fg);
+  box-shadow: inset 4px 4px 9px var(--sh-d), inset -4px -4px 9px var(--sh-l); }
+.math.big { font-size: 1.25rem; padding: 16px 18px; }
+.math.raw { font: 500 .85rem var(--f-mono); white-space: pre; }
+mjx-container { margin: 0 !important; }
+mjx-container[display="true"] { text-align: left !important; display: block !important; }
+.inline-math { display: inline-block; vertical-align: middle; }
+
+/* yechim */
+.empty { color: var(--muted); border-radius: 14px; padding: 18px; box-shadow: inset 4px 4px 9px var(--sh-d), inset -4px -4px 9px var(--sh-l); }
+.blk { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.lbl { font: 600 .74rem var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.blk p { color: var(--muted); font-size: .92rem; }
+.blk.answer .lbl { color: var(--accent); }
+.blk.answer .math { outline: 1.5px solid var(--accent); outline-offset: -1.5px; }
+.ans-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ans-row .btn { min-height: 38px; font-size: .85rem; padding: 6px 12px; }
+.dom { font-size: .88rem; color: var(--muted); }
+
+/* ifoda kiritish */
+.expr-wrap { display: flex; align-items: center; gap: 10px; }
+.expr-wrap .yeq { font: 700 1.25rem var(--f-display); color: var(--accent); flex: none; }
+#f-expr { flex: 1; min-width: 0; width: 100%; min-height: 54px; border: 0; border-radius: 15px; padding: 10px 16px; background: var(--bg);
+  font: 500 1.1rem var(--f-mono); color: var(--fg); box-shadow: inset 5px 5px 10px var(--sh-d), inset -5px -5px 10px var(--sh-l); }
+#f-expr::placeholder { color: var(--muted); opacity: .8; }
+#f-expr[aria-invalid="true"] { outline: 2px solid var(--err); outline-offset: 1px; }
+.keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 12px; padding: 4px; margin: -4px; }
+.key { min-height: 44px; border: 0; border-radius: 12px; background: var(--bg); font: 600 .95rem var(--f-mono); padding: 4px 6px;
+  box-shadow: 4px 4px 9px var(--sh-d), -4px -4px 9px var(--sh-l); transition: box-shadow .12s ease; }
+.key:active { box-shadow: inset 3px 3px 7px var(--sh-d), inset -3px -3px 7px var(--sh-l); }
+.key.fn { color: var(--accent); }
+.key.wide { grid-column: span 2; }
+details.help { border-radius: 14px; padding: 4px 4px; }
+details.help summary { cursor: pointer; font-weight: 600; min-height: 40px; display: flex; align-items: center; padding: 0 10px; border-radius: 12px; list-style: none; }
+details.help summary::-webkit-details-marker { display: none; }
+details.help summary::before { content: "+"; display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 10px; border-radius: 50%; color: var(--accent);
+  box-shadow: inset 2px 2px 4px var(--sh-d), inset -2px -2px 4px var(--sh-l); font-family: var(--f-mono); }
+details.help[open] summary::before { content: "−"; }
+.help-body { padding: 8px 12px 12px; display: flex; flex-direction: column; gap: 8px; color: var(--muted); font-size: .92rem; }
+.help-body code { font: 500 .85rem var(--f-mono); color: var(--fg); background: none; overflow-wrap: anywhere; }
+.help-body li { margin-bottom: 4px; }
+.help-body ul { margin: 0; padding-left: 18px; }
+
+/* tagyozuv */
+.foot { text-align: center; color: var(--muted); font-size: .75rem; line-height: 1.55; max-width: 66ch; margin: 8px auto 0; padding: 0 6px; }
+
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 24px); opacity: 0; pointer-events: none;
+  background: var(--bg); color: var(--fg); border-radius: 14px; padding: 10px 18px; font-weight: 600; font-size: .9rem; z-index: 20;
+  box-shadow: 6px 6px 14px var(--sh-d), -6px -6px 14px var(--sh-l); transition: opacity .2s ease, transform .2s ease; max-width: calc(100vw - 32px); }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 520px) {
+  :root { --off: 6px; --blur: 13px; }
+  .card { padding: 18px 16px; border-radius: 20px; }
+  .math.big { font-size: 1.1rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <div class="mark raised-sm" aria-hidden="true">f′</div>
+      <div>
+        <h1>Hosila Hisoblagich</h1>
+        <p class="sub">Istalgan funksiyaning n-tartibli hosilasi</p>
+      </div>
+    </div>
+    <button class="btn icon" id="theme" type="button" aria-label="Kunduzgi yoki tungi rejimni almashtirish">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>
+    </button>
+  </header>
+
+  <nav class="tabs" id="tabs" aria-label="Bo'limlar"></nav>
+
+  <main>
+    <section id="sec-hosila" aria-labelledby="h-task" style="display:flex;flex-direction:column;gap:22px">
+      <div class="task-head">
+        <h2 id="h-task">n-tartibli hosila hisoblansin</h2>
+        <p>Funksiyani yozing, hosila tartibi n ni kiriting. Sayt qadamlarni va n bo‘yicha umumiy formulani chiqaradi.</p>
+      </div>
+
+      <div class="grid">
+        <form class="card raised" id="form" autocomplete="off" novalidate>
+          <h3>Funksiya</h3>
+          <div class="expr-wrap">
+            <span class="yeq" aria-hidden="true">y =</span>
+            <input id="f-expr" name="expr" type="text" inputmode="text" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"
+              placeholder="masalan: (4x+7)/(2x+3)" aria-label="Funksiya y(x)" aria-describedby="err" value="sin(2x)+cos(x+1)">
+          </div>
+          <div class="keys" id="keys" aria-label="Belgilar paneli"></div>
+          <div class="math" id="preview" aria-label="Funksiya ko‘rinishi"></div>
+          <div class="nrow">
+            <button class="btn" type="button" id="n-minus" aria-label="n ni kamaytirish">−</button>
+            <div class="field">
+              <label for="f-n">Hosila tartibi n</label>
+              <input id="f-n" name="n" type="number" step="1" min="1" max="30" value="5">
+            </div>
+            <button class="btn" type="button" id="n-plus" aria-label="n ni oshirish">+</button>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="submit" id="solve">Hisoblash</button>
+            <p class="err" id="err" role="alert"></p>
+          </div>
+          <details class="help inset">
+            <summary>Funksiya qanday yoziladi?</summary>
+            <div class="help-body">
+              <ul>
+                <li>Ko‘paytirish: <code>2x</code>, <code>3(x+1)</code> yoki <code>2*x</code></li>
+                <li>Daraja: <code>x^3</code>, <code>e^(3x+1)</code>, <code>5^(2x+3)</code></li>
+                <li>Kasr: <code>(4x+7)/(2x+3)</code>, <code>4/x</code>, <code>x/(2(3x+2))</code></li>
+                <li>Ildiz: <code>sqrt(x)</code>, <code>sqrt(e^(3x+1))</code>, <code>root(e^(7x-1), 5)</code></li>
+                <li>Funksiyalar: <code>sin</code>, <code>cos</code>, <code>tan</code>, <code>ln</code>, <code>lg</code>, <code>exp</code></li>
+                <li><code>lg</code> o‘nli logarifm, <code>ln</code> va <code>log</code> natural logarifm. <code>pi</code> son π</li>
+              </ul>
+              <p>Qavslarga ehtiyot bo‘ling: <code>e^3x</code> bu (e³)·x, ko‘rsatkichni <code>e^(3x)</code> deb yozing. Yuqoridagi ko‘rinish sizning ifodangiz qanday o‘qilganini ko‘rsatadi.</p>
+            </div>
+          </details>
+        </form>
+
+        <article class="card raised" id="result" aria-live="polite" aria-labelledby="h-res">
+          <h3 id="h-res">Yechim</h3>
+          <div id="res-body" style="display:flex;flex-direction:column;gap:22px"></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Nukus Davlat Texnika Universiteti, Sun'iy intellekt kafedrasi, Sun'iy intellekt yo'nalishi, 111-26 SI o'zbek guruhi talabasi Farxatov Samandar tomonidan ishlab chiqildi.Xato va kamchiliklar bo'lsa t.me/@samancikme
+  </footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+window.MathJax = { startup: { typeset: false }, svg: { fontCache: 'none' }, options: { enableMenu: false } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" async id="mj-script"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/all.min.js" async id="nerd-script"></script>
+<script>
+/* n-tartibli hosila yadrosi: erkin ifodani o'qiydi, hadlarga ajratadi va
+   umumiy formula bilan aniq n uchun hosilani chiqaradi. Hamma koeffitsiyent aniq kasr (BigInt). */
+(function (root, factory) {
+  var api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  else root.HosilaExpr = api;
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  var T = String.raw;
+  var LIM = { nMax: 30, casMax: 8 };
+
+  /* ================= kasrlar ================= */
+  function abs(v) { return v < 0n ? -v : v; }
+  function gcd(a, b) { a = abs(a); b = abs(b); while (b) { var t = a % b; a = b; b = t; } return a; }
+  function lcm(a, b) { return a / gcd(a, b) * b; }
+  function F(n, d) {
+    n = BigInt(n); d = d === undefined ? 1n : BigInt(d);
+    if (d === 0n) throw new Error('div0');
+    if (d < 0n) { n = -n; d = -d; }
+    var g = gcd(n, d) || 1n;
+    return { n: n / g, d: d / g };
+  }
+  function fAdd(x, y) { return F(x.n * y.d + y.n * x.d, x.d * y.d); }
+  function fSub(x, y) { return F(x.n * y.d - y.n * x.d, x.d * y.d); }
+  function fMul(x, y) { return F(x.n * y.n, x.d * y.d); }
+  function fDiv(x, y) { return F(x.n * y.d, x.d * y.n); }
+  function fNeg(x) { return { n: -x.n, d: x.d }; }
+  function fPowInt(x, k) {
+    var e = BigInt(Math.abs(k));
+    var r = F(x.n ** e, x.d ** e);
+    return k < 0 ? fDiv(F(1), r) : r;
+  }
+  function isZero(x) { return x.n === 0n; }
+  function isOne(x) { return x.n === 1n && x.d === 1n; }
+  function isInt(x) { return x.d === 1n; }
+  function fNum(x) { return Number(x.n) / Number(x.d); }
+  function fKey(x) { return x.n + '/' + x.d; }
+  var ZERO = F(0), ONE = F(1);
+
+  function fTexAbs(f) { return f.d === 1n ? abs(f.n).toString() : T`\frac{${abs(f.n)}}{${f.d}}`; }
+  function fTex(f) { return (f.n < 0n ? '-' : '') + fTexAbs(f); }
+
+  /* ================= sintaksis daraxti ================= */
+  function ParseError(msg) { this.message = msg; this.isParseError = true; }
+
+  var FUNCS = ['arcsin', 'arccos', 'arctan', 'sinh', 'cosh', 'tanh', 'asin', 'acos', 'atan', 'log10', 'sqrt', 'cbrt', 'root',
+    'sin', 'cos', 'tan', 'cot', 'sec', 'csc', 'exp', 'log', 'ln', 'lg'];
+  var NAMES = FUNCS.concat(['pi', 'e', 'x']).sort(function (a, b) { return b.length - a.length; });
+
+  function decimalToF(str) {
+    var parts = str.split('.');
+    if (parts.length === 1) return F(BigInt(parts[0]));
+    return F(BigInt((parts[0] || '0') + parts[1]), 10n ** BigInt(parts[1].length));
+  }
+
+  function tokenize(src) {
+    var s = String(src)
+      .replace(/[−–—]/g, '-')
+      .replace(/[×·⋅∙]/g, '*')
+      .replace(/÷/g, '/')
+      .replace(/\*\*/g, '^')
+      .replace(/√/g, 'sqrt')
+      .replace(/π/g, 'pi')
+      .replace(/²/g, '^2').replace(/³/g, '^3')
+      .replace(/[\[{]/g, '(').replace(/[\]}]/g, ')')
+      .toLowerCase();
+    var toks = [], i = 0, m;
+    while (i < s.length) {
+      var ch = s[i];
+      if (/\s/.test(ch)) { i++; continue; }
+      if ((m = /^(\d+\.?\d*|\.\d+)/.exec(s.slice(i)))) {
+        var raw = m[1].replace(/\.$/, '');
+        toks.push({ t: 'num', v: decimalToF(raw.charAt(0) === '.' ? '0' + raw : raw) });
+        i += m[1].length; continue;
+      }
+      if (/[a-z]/.test(ch)) {
+        var found = null;
+        for (var k = 0; k < NAMES.length; k++) {
+          if (s.startsWith(NAMES[k], i)) { found = NAMES[k]; break; }
+        }
+        if (!found) {
+          var word = /^[a-z]+/.exec(s.slice(i))[0];
+          if (word.length === 1) throw new ParseError('Faqat x o‘zgaruvchisi ishlatiladi, «' + word + '» tanilmadi.');
+          throw new ParseError('«' + word + '» tanilmadi.');
+        }
+        toks.push({ t: 'id', name: found }); i += found.length; continue;
+      }
+      if (ch === '(') { toks.push({ t: 'lp' }); i++; continue; }
+      if (ch === ')') { toks.push({ t: 'rp' }); i++; continue; }
+      if (ch === ',') { toks.push({ t: 'comma' }); i++; continue; }
+      if ('+-*/^'.indexOf(ch) >= 0) { toks.push({ t: 'op', c: ch }); i++; continue; }
+      throw new ParseError('Tushunarsiz belgi: «' + ch + '».');
+    }
+    return toks;
+  }
+
+  function mkFn(name, arg) {
+    if (name === 'sqrt') return { t: 'pow', a: arg, b: { t: 'num', v: F(1, 2) } };
+    if (name === 'cbrt') return { t: 'pow', a: arg, b: { t: 'num', v: F(1, 3) } };
+    if (name === 'log') name = 'ln';
+    if (name === 'log10') name = 'lg';
+    if (name === 'asin') name = 'arcsin';
+    if (name === 'acos') name = 'arccos';
+    if (name === 'atan') name = 'arctan';
+    return { t: 'fn', name: name, a: arg };
+  }
+
+  function parse(src) {
+    var toks = tokenize(src);
+    if (!toks.length) throw new ParseError('Funksiyani kiriting.');
+    var i = 0;
+    function peek() { return toks[i]; }
+    function isFnName(t) { return t && t.t === 'id' && FUNCS.indexOf(t.name) >= 0; }
+    function startsFactor(t) { return t && (t.t === 'num' || t.t === 'lp' || t.t === 'id'); }
+    function expectRp() {
+      if (!peek() || peek().t !== 'rp') throw new ParseError('Qavslar juft emas: yopuvchi «)» yetishmayapti.');
+      i++;
+    }
+    function expr() {
+      var l = term();
+      while (peek() && peek().t === 'op' && (peek().c === '+' || peek().c === '-')) {
+        var c = toks[i++].c;
+        l = { t: c === '+' ? 'add' : 'sub', a: l, b: term() };
+      }
+      return l;
+    }
+    function term() {
+      var l = unary();
+      for (;;) {
+        var t = peek();
+        if (t && t.t === 'op' && (t.c === '*' || t.c === '/')) {
+          i++;
+          l = { t: t.c === '*' ? 'mul' : 'div', a: l, b: unary() };
+        } else if (startsFactor(t)) {
+          l = { t: 'mul', a: l, b: unary() };
+        } else break;
+      }
+      return l;
+    }
+    function unary() {
+      var t = peek();
+      if (t && t.t === 'op' && t.c === '-') { i++; return { t: 'neg', a: unary() }; }
+      if (t && t.t === 'op' && t.c === '+') { i++; return unary(); }
+      return power();
+    }
+    function power() {
+      var b = atom();
+      var t = peek();
+      if (t && t.t === 'op' && t.c === '^') {
+        i++;
+        return { t: 'pow', a: b, b: expUnary() };
+      }
+      return b;
+    }
+    function expUnary() {
+      var t = peek();
+      if (t && t.t === 'op' && t.c === '-') { i++; return { t: 'neg', a: expUnary() }; }
+      if (t && t.t === 'op' && t.c === '+') { i++; return expUnary(); }
+      return power();
+    }
+    function juxt() {
+      var l = power();
+      for (;;) {
+        var t = peek();
+        if (t && (t.t === 'num' || t.t === 'lp' || (t.t === 'id' && !isFnName(t)))) l = { t: 'mul', a: l, b: power() };
+        else break;
+      }
+      return l;
+    }
+    function atom() {
+      var t = toks[i++];
+      if (!t) throw new ParseError('Ifoda tugallanmagan, davomi yetishmayapti.');
+      if (t.t === 'num') return { t: 'num', v: t.v };
+      if (t.t === 'lp') {
+        if (peek() && peek().t === 'rp') throw new ParseError('Bo‘sh qavs «()» bo‘lishi mumkin emas.');
+        var e = expr(); expectRp(); return e;
+      }
+      if (t.t === 'id') {
+        if (t.name === 'x') return { t: 'x' };
+        if (t.name === 'e') return { t: 'e' };
+        if (t.name === 'pi') return { t: 'pi' };
+        if (t.name === 'root') {
+          if (!peek() || peek().t !== 'lp') throw new ParseError('root(ifoda, n) ko‘rinishida yozing.');
+          i++;
+          var u = expr();
+          if (!peek() || peek().t !== 'comma') throw new ParseError('root(ifoda, n) ko‘rinishida yozing.');
+          i++;
+          var nn = expr(); expectRp();
+          return { t: 'pow', a: u, b: { t: 'div', a: { t: 'num', v: ONE }, b: nn } };
+        }
+        var arg;
+        if (peek() && peek().t === 'lp') { i++; arg = expr(); expectRp(); }
+        else {
+          if (!startsFactor(peek()) || isFnName(peek())) throw new ParseError('«' + t.name + '» dan keyin argument yozing, masalan ' + t.name + '(x).');
+          arg = juxt();
+        }
+        return mkFn(t.name, arg);
+      }
+      if (t.t === 'rp') throw new ParseError('Qavslar juft emas: ortiqcha «)».');
+      if (t.t === 'op') throw new ParseError('«' + t.c + '» belgisidan oldin yoki keyin son yetishmayapti.');
+      throw new ParseError('Ifodani o‘qib bo‘lmadi.');
+    }
+    var ast = expr();
+    if (i < toks.length) {
+      var t = toks[i];
+      if (t.t === 'rp') throw new ParseError('Qavslar juft emas: ortiqcha «)».');
+      throw new ParseError('Ifodaning davomini o‘qib bo‘lmadi.');
+    }
+    return ast;
+  }
+
+  /* ---------- aniq hisoblash yordamchilari ---------- */
+  function constVal(n) {
+    var a, b;
+    switch (n.t) {
+      case 'num': return n.v;
+      case 'neg': a = constVal(n.a); return a && fNeg(a);
+      case 'add': a = constVal(n.a); b = constVal(n.b); return a && b && fAdd(a, b);
+      case 'sub': a = constVal(n.a); b = constVal(n.b); return a && b && fSub(a, b);
+      case 'mul': a = constVal(n.a); b = constVal(n.b); return a && b && fMul(a, b);
+      case 'div': a = constVal(n.a); b = constVal(n.b); return a && b && !isZero(b) ? fDiv(a, b) : null;
+      case 'pow':
+        a = constVal(n.a); b = constVal(n.b);
+        if (!a || !b || !isInt(b) || abs(b.n) > 64n) return null;
+        if (isZero(a) && b.n < 0n) return null;
+        return fPowInt(a, Number(b.n));
+      default: return null;
+    }
+  }
+  function trim(p) { while (p.length > 1 && isZero(p[p.length - 1])) p.pop(); return p; }
+  function toPoly(n) {
+    var a, b, c, i, j;
+    switch (n.t) {
+      case 'num': return [n.v];
+      case 'x': return [ZERO, ONE];
+      case 'neg': a = toPoly(n.a); return a && a.map(fNeg);
+      case 'add': case 'sub':
+        a = toPoly(n.a); b = toPoly(n.b);
+        if (!a || !b) return null;
+        c = [];
+        for (i = 0; i < Math.max(a.length, b.length); i++) {
+          var x = a[i] || ZERO, y = b[i] || ZERO;
+          c.push(n.t === 'add' ? fAdd(x, y) : fSub(x, y));
+        }
+        return trim(c);
+      case 'mul':
+        a = toPoly(n.a); b = toPoly(n.b);
+        if (!a || !b) return null;
+        c = [];
+        for (i = 0; i < a.length + b.length - 1; i++) c.push(ZERO);
+        for (i = 0; i < a.length; i++) for (j = 0; j < b.length; j++) c[i + j] = fAdd(c[i + j], fMul(a[i], b[j]));
+        return trim(c);
+      case 'div':
+        a = toPoly(n.a); b = constVal(n.b);
+        if (!a || !b || isZero(b)) return null;
+        return a.map(function (v) { return fDiv(v, b); });
+      case 'pow':
+        b = constVal(n.b);
+        if (!b || !isInt(b) || b.n < 0n || b.n > 12n) return null;
+        a = toPoly(n.a);
+        if (!a) return null;
+        var r = [ONE];
+        for (var k = 0; k < Number(b.n); k++) r = toPoly({ t: 'mul', a: { t: 'poly', p: r }, b: { t: 'poly', p: a } });
+        return r;
+      case 'poly': return n.p;
+      default: return null;
+    }
+  }
+  function asLin(n) {
+    var p = toPoly(n);
+    if (!p) return null;
+    trim(p);
+    if (p.length === 2) return { a: p[1], b: p[0] };
+    return null;
+  }
+
+  /* ---------- daraxtni LaTeX ga o'tkazish ---------- */
+  var FN_TEX = { sin: '\\sin', cos: '\\cos', tan: '\\tan', cot: '\\cot', sec: '\\sec', csc: '\\csc', sinh: '\\sinh', cosh: '\\cosh', tanh: '\\tanh',
+    ln: '\\ln', lg: '\\lg', arcsin: '\\arcsin', arccos: '\\arccos', arctan: '\\arctan' };
+  function prec(n) {
+    switch (n.t) {
+      case 'add': case 'sub': case 'neg': return 1;
+      case 'mul': return 2;
+      case 'div': return 3;
+      case 'pow': return 4;
+      case 'num': return isInt(n.v) ? 5 : 3;
+      case 'fn': return n.name === 'exp' ? 4 : 3;
+      default: return 5;
+    }
+  }
+  function toTex(n) {
+    function w(c, min) { var s = toTex(c); return prec(c) < min ? '(' + s + ')' : s; }
+    switch (n.t) {
+      case 'num': return fTexAbs(n.v);
+      case 'x': return 'x';
+      case 'e': return 'e';
+      case 'pi': return T`\pi`;
+      case 'neg': return '-' + w(n.a, 2);
+      case 'add':
+        if (n.b.t === 'neg') return toTex(n.a) + '-' + w(n.b.a, 2);
+        return toTex(n.a) + '+' + toTex(n.b);
+      case 'sub': return toTex(n.a) + '-' + w(n.b, 2);
+      case 'mul': {
+        var l = w(n.a, 2), r = w(n.b, 2);
+        return l + (/^[0-9]/.test(r) ? T`\cdot ` : '') + r;
+      }
+      case 'div': return T`\frac{${toTex(n.a)}}{${toTex(n.b)}}`;
+      case 'pow': {
+        if (n.b.t === 'num' && n.b.v.n === 1n && n.b.v.d >= 2n) {
+          return n.b.v.d === 2n ? T`\sqrt{${toTex(n.a)}}` : T`\sqrt[${n.b.v.d}]{${toTex(n.a)}}`;
+        }
+        if (n.b.t === 'div' && n.b.a.t === 'num' && isOne(n.b.a.v) && n.b.b.t === 'num' && isInt(n.b.b.v)) {
+          return n.b.b.v.n === 2n ? T`\sqrt{${toTex(n.a)}}` : T`\sqrt[${n.b.b.v.n}]{${toTex(n.a)}}`;
+        }
+        var base = prec(n.a) >= 5 && !(n.a.t === 'num' && !isInt(n.a.v)) ? toTex(n.a) : '(' + toTex(n.a) + ')';
+        return base + '^{' + toTex(n.b) + '}';
+      }
+      case 'fn':
+        if (n.name === 'exp') return 'e^{' + toTex(n.a) + '}';
+        return FN_TEX[n.name] + '(' + toTex(n.a) + ')';
+      default: return '?';
+    }
+  }
+
+  /* ---------- nerdamer uchun satr ---------- */
+  function toNerd(n) {
+    switch (n.t) {
+      case 'num': return isInt(n.v) ? n.v.n.toString() : '(' + n.v.n + '/' + n.v.d + ')';
+      case 'x': return 'x';
+      case 'e': return 'e';
+      case 'pi': return 'pi';
+      case 'neg': return '(-' + toNerd(n.a) + ')';
+      case 'add': return '(' + toNerd(n.a) + '+' + toNerd(n.b) + ')';
+      case 'sub': return '(' + toNerd(n.a) + '-' + toNerd(n.b) + ')';
+      case 'mul': return '(' + toNerd(n.a) + '*' + toNerd(n.b) + ')';
+      case 'div': return '(' + toNerd(n.a) + '/' + toNerd(n.b) + ')';
+      case 'pow': return '((' + toNerd(n.a) + ')^(' + toNerd(n.b) + '))';
+      case 'fn':
+        if (n.name === 'lg') return '(log(' + toNerd(n.a) + ')/log(10))';
+        if (n.name === 'ln') return 'log(' + toNerd(n.a) + ')';
+        if (n.name === 'arcsin') return 'asin(' + toNerd(n.a) + ')';
+        if (n.name === 'arccos') return 'acos(' + toNerd(n.a) + ')';
+        if (n.name === 'arctan') return 'atan(' + toNerd(n.a) + ')';
+        return n.name + '(' + toNerd(n.a) + ')';
+      default: return '0';
+    }
+  }
+
+  /* ---------- sonli baholash (sinov uchun) ---------- */
+  function evalAst(n, x) {
+    switch (n.t) {
+      case 'num': return fNum(n.v);
+      case 'x': return x;
+      case 'e': return Math.E;
+      case 'pi': return Math.PI;
+      case 'neg': return -evalAst(n.a, x);
+      case 'add': return evalAst(n.a, x) + evalAst(n.b, x);
+      case 'sub': return evalAst(n.a, x) - evalAst(n.b, x);
+      case 'mul': return evalAst(n.a, x) * evalAst(n.b, x);
+      case 'div': return evalAst(n.a, x) / evalAst(n.b, x);
+      case 'pow': return Math.pow(evalAst(n.a, x), evalAst(n.b, x));
+      case 'fn': {
+        var u = evalAst(n.a, x);
+        var f = { sin: Math.sin, cos: Math.cos, tan: Math.tan, cot: function (v) { return 1 / Math.tan(v); }, sec: function (v) { return 1 / Math.cos(v); },
+          csc: function (v) { return 1 / Math.sin(v); }, sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh, ln: Math.log, lg: Math.log10, exp: Math.exp,
+          arcsin: Math.asin, arccos: Math.acos, arctan: Math.atan }[n.name];
+        return f(u);
+      }
+      default: return NaN;
+    }
+  }
+
+  /* ================= hadlarga ajratish ================= */
+  var NOFORM = { noform: true };
+
+  function asExpForm(n) {
+    if (n.t === 'fn' && n.name === 'exp') {
+      var L0 = asLin(n.a);
+      return L0 ? { base: 'e', k: L0.a, m: L0.b } : null;
+    }
+    if (n.t === 'pow') {
+      var L = asLin(n.b);
+      if (L) {
+        if (n.a.t === 'e') return { base: 'e', k: L.a, m: L.b };
+        var bc = constVal(n.a);
+        if (bc && bc.n > 0n && !isOne(bc)) return { base: bc, k: L.a, m: L.b };
+      }
+      var ex = constVal(n.b);
+      if (ex) {
+        var inner = asExpForm(n.a);
+        if (inner) return { base: inner.base, k: fMul(inner.k, ex), m: fMul(inner.m, ex) };
+      }
+    }
+    return null;
+  }
+
+  /* maxraj: c * (ax+b)^k ko'rinishida */
+  function asDenPow(n) {
+    var r;
+    if (n.t === 'mul') {
+      var ca = constVal(n.a), cb = constVal(n.b);
+      if (ca && !isZero(ca) && (r = asDenPow(n.b))) { r.c = fMul(r.c, ca); return r; }
+      if (cb && !isZero(cb) && (r = asDenPow(n.a))) { r.c = fMul(r.c, cb); return r; }
+    }
+    if (n.t === 'div') {
+      var cd = constVal(n.b);
+      if (cd && !isZero(cd) && (r = asDenPow(n.a))) { r.c = fDiv(r.c, cd); return r; }
+    }
+    if (n.t === 'neg' && (r = asDenPow(n.a))) { r.c = fNeg(r.c); return r; }
+    if (n.t === 'pow') {
+      var k = constVal(n.b), base = asLin(n.a);
+      if (k && base && k.n > 0n) return { c: ONE, a: base.a, b: base.b, k: k };
+    }
+    var L = asLin(n);
+    if (L) return { c: ONE, a: L.a, b: L.b, k: ONE };
+    return null;
+  }
+
+  function decompose(ast) {
+    var terms = [];
+    function addPoly(p, m) {
+      for (var k = 0; k < p.length; k++) {
+        if (isZero(p[k])) continue;
+        if (k === 0) terms.push({ kind: 'const', c: fMul(m, p[k]) });
+        else terms.push({ kind: 'pow', c: fMul(m, p[k]), a: ONE, b: ZERO, p: F(k) });
+      }
+    }
+    function go(n, m) {
+      var cv = constVal(n);
+      if (cv) { terms.push({ kind: 'const', c: fMul(m, cv) }); return; }
+      var a, b, ca, cb, p, L;
+      switch (n.t) {
+        case 'add': go(n.a, m); go(n.b, m); return;
+        case 'sub': go(n.a, m); go(n.b, fNeg(m)); return;
+        case 'neg': go(n.a, fNeg(m)); return;
+        case 'mul':
+          ca = constVal(n.a); cb = constVal(n.b);
+          if (ca) { go(n.b, fMul(m, ca)); return; }
+          if (cb) { go(n.a, fMul(m, cb)); return; }
+          p = toPoly(n);
+          if (p) { addPoly(p, m); return; }
+          throw NOFORM;
+        case 'div': {
+          cb = constVal(n.b);
+          if (cb) { go(n.a, fDiv(m, cb)); return; }
+          var N = toPoly(n.a), D = asDenPow(n.b);
+          if (N && D) {
+            trim(N);
+            if (N.length <= 2) {
+              var q = N[0], pp = N[1] || ZERO;
+              var alpha = fDiv(pp, D.a);
+              var beta = fSub(q, fMul(alpha, D.b));
+              var cc = fDiv(m, D.c);
+              if (!isZero(alpha)) {
+                var e1 = fSub(ONE, D.k);
+                if (isZero(e1)) terms.push({ kind: 'const', c: fMul(cc, alpha) });
+                else terms.push({ kind: 'pow', c: fMul(cc, alpha), a: D.a, b: D.b, p: e1 });
+              }
+              if (!isZero(beta)) terms.push({ kind: 'pow', c: fMul(cc, beta), a: D.a, b: D.b, p: fNeg(D.k) });
+              return;
+            }
+          }
+          throw NOFORM;
+        }
+        case 'pow': {
+          var ex = asExpForm(n);
+          if (ex) { terms.push({ kind: 'exp', c: m, base: ex.base, a: ex.k, b: ex.m }); return; }
+          var e = constVal(n.b);
+          L = asLin(n.a);
+          if (e && L && abs(e.n) <= 400n && e.d <= 12n) { terms.push({ kind: 'pow', c: m, a: L.a, b: L.b, p: e }); return; }
+          p = toPoly(n);
+          if (p) { addPoly(p, m); return; }
+          throw NOFORM;
+        }
+        case 'fn': {
+          if (n.name === 'exp') {
+            var ex2 = asExpForm(n);
+            if (ex2) { terms.push({ kind: 'exp', c: m, base: ex2.base, a: ex2.k, b: ex2.m }); return; }
+            throw NOFORM;
+          }
+          L = asLin(n.a);
+          if (!L) throw NOFORM;
+          if (n.name === 'sin' || n.name === 'cos') { terms.push({ kind: 'trig', c: m, fn: n.name, a: L.a, b: L.b }); return; }
+          if (n.name === 'ln') { terms.push({ kind: 'log', c: m, base: 'e', a: L.a, b: L.b }); return; }
+          if (n.name === 'lg') { terms.push({ kind: 'log', c: m, base: '10', a: L.a, b: L.b }); return; }
+          throw NOFORM;
+        }
+        default:
+          p = toPoly(n);
+          if (p) { addPoly(p, m); return; }
+          throw NOFORM;
+      }
+    }
+    try { go(ast, ONE); } catch (err) { if (err === NOFORM) return null; throw err; }
+    /* o'xshash hadlarni birlashtirish */
+    var map = {}, order = [], cst = ZERO;
+    terms.forEach(function (t) {
+      if (t.kind === 'const') { cst = fAdd(cst, t.c); return; }
+      var key = t.kind + '|' + (t.fn || '') + '|' + (t.base === undefined ? '' : (t.base === 'e' || t.base === '10' ? t.base : fKey(t.base))) +
+        '|' + fKey(t.a) + '|' + fKey(t.b) + '|' + (t.p ? fKey(t.p) : '');
+      if (map[key]) map[key].c = fAdd(map[key].c, t.c);
+      else { map[key] = t; order.push(t); }
+    });
+    var out = order.filter(function (t) { return !isZero(t.c); });
+    if (!isZero(cst)) out.push({ kind: 'const', c: cst });
+    return out;
+  }
+
+  /* ================= formatlash ================= */
+  function linInt(A, B) {
+    var s = '';
+    if (A !== 0n) s = A === 1n ? 'x' : A === -1n ? '-x' : A.toString() + 'x';
+    if (B !== 0n) s = s === '' ? B.toString() : s + (B > 0n ? '+' + B : B.toString());
+    return s === '' ? '0' : s;
+  }
+  function linTex(a, b) {
+    var D = lcm(a.d, b.d);
+    var num = linInt(a.n * (D / a.d), b.n * (D / b.d));
+    return D === 1n ? num : T`\frac{${num}}{${D}}`;
+  }
+  function parTex(a, b) {
+    if (isOne(a) && isZero(b)) return 'x';
+    var D = lcm(a.d, b.d);
+    return D === 1n ? '(' + linTex(a, b) + ')' : T`\left(${linTex(a, b)}\right)`;
+  }
+  function aPow(a, e) {
+    if (isOne(a)) return '';
+    if (isInt(a)) return (a.n < 0n ? '(' + a.n + ')' : a.n.toString()) + '^{' + e + '}';
+    return T`\left(${fTex(a)}\right)^{${e}}`;
+  }
+  function cat(a, b) {
+    if (!a) return b;
+    if (!b) return a;
+    if (/^[0-9]/.test(b)) return a + T`\cdot ` + b;
+    if (/[})!]$/.test(a) && /^[A-Za-z\\(]/.test(b)) return a + T`\,` + b;
+    return a + b;
+  }
+  function stripOuter(s) {
+    if (s.charAt(0) !== '(' || s.charAt(s.length - 1) !== ')') return s;
+    var d = 0;
+    for (var i = 0; i < s.length; i++) {
+      if (s[i] === '(') d++;
+      else if (s[i] === ')') { d--; if (d === 0 && i < s.length - 1) return s; }
+    }
+    return s.slice(1, -1);
+  }
+  function joinTerms(ts) {
+    if (!ts.length) return '0';
+    return ts.map(function (t, i) {
+      return (i === 0 ? (t.neg ? '-' : '') : (t.neg ? '-' : '+')) + t.tex;
+    }).join('');
+  }
+  /* c * (suratdagi bo'laklar) / (maxrajdagi bo'laklar) */
+  function gen(c, numParts, denParts) {
+    var neg = c.n < 0n, cn = abs(c.n), cd = c.d;
+    var nums = numParts.filter(Boolean), dens = denParts.filter(Boolean), tex = '';
+    if (!dens.length) {
+      var coef = cd === 1n ? (cn === 1n && nums.length ? '' : cn.toString()) : T`\frac{${cn}}{${cd}}`;
+      tex = coef;
+      nums.forEach(function (p) { tex = cat(tex, p); });
+      return { neg: neg, tex: tex };
+    }
+    var num = (cn !== 1n || !nums.length) ? cn.toString() : '';
+    nums.forEach(function (p) { num = cat(num, p); });
+    var den = cd !== 1n ? cd.toString() : '';
+    if (cd === 1n && dens.length === 1) den = stripOuter(dens[0]);
+    else dens.forEach(function (p) { den = cat(den, p); });
+    return { neg: neg, tex: T`\frac{${num}}{${den}}` };
+  }
+  function baseTex(B) { return isInt(B) ? B.n.toString() : T`\left(${fTex(B)}\right)`; }
+  function lnPow(B, n) {
+    var e = n === 1 ? '' : '^{' + n + '}';
+    return T`\ln${e}${isInt(B) ? ' ' + B.n : T`\left(${fTex(B)}\right)`}`;
+  }
+  /* q > 0 uchun (ax+b)^q yozuvi */
+  function powPiece(a, b, q) {
+    var par = parTex(a, b), raw = linTex(a, b);
+    if (isInt(q)) return q.n === 1n ? par : par + '^{' + q.n + '}';
+    var inner = q.n === 1n ? raw : par + '^{' + q.n + '}';
+    return q.d === 2n ? T`\sqrt{${inner}}` : T`\sqrt[${q.d}]{${inner}}`;
+  }
+  function ffNum(p, n) {
+    var r = ONE;
+    for (var j = 0; j < n; j++) r = fMul(r, fSub(p, F(j)));
+    return r;
+  }
+  function factorial(n) { var r = 1n; for (var i = 2n; i <= BigInt(n); i++) r *= i; return r; }
+
+  /* ================= hadlar bo'yicha formulalar ================= */
+  function termBase(t) {
+    switch (t.kind) {
+      case 'const': return { neg: t.c.n < 0n, tex: fTexAbs(t.c) };
+      case 'trig': return gen(t.c, [trigName(t.fn) + '(' + linTex(t.a, t.b) + ')'], []);
+      case 'exp': {
+        var M = linTex(t.a, t.b);
+        return gen(t.c, [t.base === 'e' ? 'e^{' + M + '}' : baseTex(t.base) + '^{' + M + '}'], []);
+      }
+      case 'log': return gen(t.c, [(t.base === 'e' ? T`\ln` : T`\lg`) + '(' + linTex(t.a, t.b) + ')'], []);
+      case 'pow': {
+        var neg = t.p.n < 0n;
+        var piece = powPiece(t.a, t.b, neg ? fNeg(t.p) : t.p);
+        return neg ? gen(t.c, [], [piece]) : gen(t.c, [piece], []);
+      }
+    }
+  }
+
+  function trigName(fn) { return fn === 'sin' ? '\\sin' : '\\cos'; }
+
+  function termAt(t, n) {
+    /* n-tartibli hosila: {neg, tex} yoki null (nolga teng) va sonli qiymat funksiyasi */
+    var coef, r;
+    switch (t.kind) {
+      case 'const': return null;
+      case 'trig': {
+        var sinSeq = [['sin', 1n], ['cos', 1n], ['sin', -1n], ['cos', -1n]];
+        var cosSeq = [['cos', 1n], ['sin', -1n], ['cos', -1n], ['sin', 1n]];
+        var s = (t.fn === 'sin' ? sinSeq : cosSeq)[n % 4];
+        coef = fMul(fMul(t.c, fPowInt(t.a, n)), F(s[1]));
+        r = gen(coef, [trigName(s[0]) + '(' + linTex(t.a, t.b) + ')'], []);
+        r.num = function (x) {
+          return fNum(coef) * (s[0] === 'sin' ? Math.sin : Math.cos)(fNum(t.a) * x + fNum(t.b));
+        };
+        return r;
+      }
+      case 'exp': {
+        coef = fMul(t.c, fPowInt(t.a, n));
+        var M = linTex(t.a, t.b);
+        var body = t.base === 'e' ? 'e^{' + M + '}' : lnPow(t.base, n) + T`\cdot ` + baseTex(t.base) + '^{' + M + '}';
+        r = gen(coef, [body], []);
+        var lnB = t.base === 'e' ? 1 : Math.log(fNum(t.base)), B = t.base === 'e' ? Math.E : fNum(t.base);
+        r.num = function (x) { return fNum(coef) * Math.pow(lnB, n) * Math.pow(B, fNum(t.a) * x + fNum(t.b)); };
+        return r;
+      }
+      case 'log': {
+        var sign = (n % 2 === 1) ? 1n : -1n;
+        coef = fMul(fMul(t.c, fPowInt(t.a, n)), F(sign * factorial(n - 1)));
+        var pw = n === 1 ? parTex(t.a, t.b) : parTex(t.a, t.b) + '^{' + n + '}';
+        r = gen(coef, [], [t.base === '10' ? T`\ln 10\,` : '', pw]);
+        r.num = function (x) {
+          return fNum(coef) / ((t.base === '10' ? Math.LN10 : 1) * Math.pow(fNum(t.a) * x + fNum(t.b), n));
+        };
+        return r;
+      }
+      case 'pow': {
+        coef = fMul(fMul(t.c, fPowInt(t.a, n)), ffNum(t.p, n));
+        if (isZero(coef)) return null;
+        var q = fSub(t.p, F(n));
+        var nb = [], db = [];
+        if (!isZero(q)) { if (q.n > 0n) nb.push(powPiece(t.a, t.b, q)); else db.push(powPiece(t.a, t.b, fNeg(q))); }
+        r = gen(coef, nb, db);
+        r.num = function (x) { return fNum(coef) * Math.pow(fNum(t.a) * x + fNum(t.b), fNum(q)); };
+        return r;
+      }
+    }
+  }
+
+  function termGeneral(t) {
+    var c = t.c;
+    switch (t.kind) {
+      case 'const': return null;
+      case 'trig':
+        return gen(c, [aPow(t.a, 'n'), trigName(t.fn) + T`\left(${linTex(t.a, t.b)}+\frac{n\pi}{2}\right)`], []);
+      case 'exp': {
+        var M = linTex(t.a, t.b);
+        var body = t.base === 'e' ? 'e^{' + M + '}' : T`\ln^{n}${isInt(t.base) ? ' ' + t.base.n : T`\left(${fTex(t.base)}\right)`}` + T`\cdot ` + baseTex(t.base) + '^{' + M + '}';
+        return gen(c, [aPow(t.a, 'n'), body], []);
+      }
+      case 'log':
+        return gen(c, [T`(-1)^{n-1}(n-1)!`, aPow(t.a, 'n')], [t.base === '10' ? T`\ln 10\,` : '', parTex(t.a, t.b) + '^{n}']);
+      case 'pow': {
+        var p = t.p, par = parTex(t.a, t.b);
+        if (isInt(p) && p.n >= 0n) {
+          return gen(c, [aPow(t.a, 'n'), T`\frac{${p.n}!}{(${p.n}-n)!}`, par + '^{' + p.n + '-n}'], []);
+        }
+        if (isInt(p)) {
+          var qq = -p.n;
+          var nf = qq === 1n ? 'n!' : T`(n+${qq - 1n})!`;
+          var df = qq > 2n ? (qq - 1n) + '!' : '';
+          return gen(c, [T`(-1)^{n}`, nf, aPow(t.a, 'n')], [df, par + '^{n+' + qq + '}']);
+        }
+        var pt = fTex(p);
+        var ptp = p.n < 0n ? T`\left(${pt}\right)` : pt;
+        var prod = T`${ptp}\left(${pt}-1\right)\cdots\left(${pt}-n+1\right)`;
+        return gen(c, [aPow(t.a, 'n'), prod, par + '^{' + pt + '-n}'], []);
+      }
+    }
+  }
+
+  function buildFormula(terms) {
+    var has = {};
+    terms.forEach(function (t) {
+      has[t.kind] = true;
+      if (t.kind === 'pow') {
+        if (isInt(t.p) && t.p.n >= 0n) has.polypow = true;
+        else if (isInt(t.p)) has.negpow = true;
+        else has.fracpow = true;
+      }
+    });
+    var rules = [];
+    var chain = false;
+    if (has.trig) {
+      rules.push(T`\left(\sin u\right)^{(n)}=\sin\left(u+\frac{n\pi}{2}\right),\qquad \left(\cos u\right)^{(n)}=\cos\left(u+\frac{n\pi}{2}\right)`); chain = true;
+    }
+    if (has.exp) {
+      rules.push(T`\left(B^{u}\right)^{(n)}=\left(k\ln B\right)^{n}B^{u}\;\;(u=kx+m),\qquad \left(e^{u}\right)^{(n)}=k^{n}e^{u}`);
+    }
+    if (has.log) {
+      rules.push(T`\left(\ln u\right)^{(n)}=\frac{(-1)^{n-1}(n-1)!\,a^{n}}{u^{n}}\;\;(u=ax+b),\qquad \lg u=\frac{\ln u}{\ln 10}`);
+    }
+    if (has.polypow) {
+      rules.push(T`\left(u^{p}\right)^{(n)}=\frac{p!}{(p-n)!}\,a^{n}u^{p-n}\;\;(n\le p),\qquad =0\;\;(n>p)`);
+    }
+    if (has.negpow) {
+      rules.push(T`\left(\frac{1}{u^{q}}\right)^{(n)}=\frac{(-1)^{n}(n+q-1)!}{(q-1)!}\cdot\frac{a^{n}}{u^{n+q}}\;\;(u=ax+b)`);
+    }
+    if (has.fracpow) {
+      rules.push(T`\left(u^{p}\right)^{(n)}=p(p-1)\cdots(p-n+1)\,a^{n}u^{p-n}\;\;(u=ax+b)`);
+    }
+    var gens = terms.map(termGeneral).filter(Boolean);
+    var base = terms.map(termBase);
+    var cst = terms.filter(function (t) { return t.kind === 'const'; }).length > 0;
+    var domain = [], seen = {};
+    terms.forEach(function (t) {
+      var s = null, L = linTex(t.a || ONE, t.b || ZERO);
+      if (t.kind === 'log') s = L + '>0';
+      else if (t.kind === 'pow' && !isInt(t.p)) s = L + (t.p.n > 0n ? T`\ge 0` : '>0');
+      else if (t.kind === 'pow' && t.p.n < 0n) s = L + T`\ne 0`;
+      if (s && !seen[s]) { seen[s] = 1; domain.push(s); }
+    });
+    return {
+      rules: rules,
+      chain: chain || has.exp || has.log || has.pow,
+      general: gens.length ? 'y^{(n)}=' + joinTerms(gens) : 'y^{(n)}=0',
+      polyNote: has.polypow,
+      rewrite: 'y=' + joinTerms(base),
+      domain: domain.join(T`,\quad `),
+      at: function (n) {
+        var parts = terms.map(function (t) { return termAt(t, n); }).filter(Boolean);
+        return {
+          tex: joinTerms(parts),
+          num: function (x) { return parts.reduce(function (s, p) { return s + p.num(x); }, 0); }
+        };
+      }
+    };
+  }
+
+  /* ================= ixtiyoriy ifodani ketma-ket differensiallash (zaxira) ================= */
+  var N0 = { t: 'num', v: ZERO }, N1 = { t: 'num', v: ONE };
+  function nnum(f) { return f.n < 0n ? { t: 'neg', a: { t: 'num', v: fNeg(f) } } : { t: 'num', v: f }; }
+  function mul(a, b) { return { t: 'mul', a: a, b: b }; }
+  function div(a, b) { return { t: 'div', a: a, b: b }; }
+  function add(a, b) { return { t: 'add', a: a, b: b }; }
+  function sub(a, b) { return { t: 'sub', a: a, b: b }; }
+  function fnode(name, a) { return { t: 'fn', name: name, a: a }; }
+  function sq(a) { return { t: 'pow', a: a, b: { t: 'num', v: F(2) } }; }
+
+  function diffAst(n) {
+    var u, du;
+    switch (n.t) {
+      case 'num': case 'e': case 'pi': return N0;
+      case 'x': return N1;
+      case 'neg': return { t: 'neg', a: diffAst(n.a) };
+      case 'add': return add(diffAst(n.a), diffAst(n.b));
+      case 'sub': return sub(diffAst(n.a), diffAst(n.b));
+      case 'mul': return add(mul(diffAst(n.a), n.b), mul(n.a, diffAst(n.b)));
+      case 'div': return div(sub(mul(diffAst(n.a), n.b), mul(n.a, diffAst(n.b))), sq(n.b));
+      case 'pow': {
+        var ce = constVal(n.b);
+        if (ce) return mul(mul(nnum(ce), { t: 'pow', a: n.a, b: nnum(fSub(ce, ONE)) }), diffAst(n.a));
+        if (n.a.t === 'e') return mul(n, diffAst(n.b));
+        var cb0 = constVal(n.a);
+        if (cb0) return mul(mul(n, fnode('ln', n.a)), diffAst(n.b));
+        return mul(n, add(mul(diffAst(n.b), fnode('ln', n.a)), div(mul(n.b, diffAst(n.a)), n.a)));
+      }
+      case 'fn':
+        u = n.a; du = diffAst(u);
+        switch (n.name) {
+          case 'sin': return mul(fnode('cos', u), du);
+          case 'cos': return { t: 'neg', a: mul(fnode('sin', u), du) };
+          case 'tan': return div(du, sq(fnode('cos', u)));
+          case 'cot': return { t: 'neg', a: div(du, sq(fnode('sin', u))) };
+          case 'sec': return mul(mul(fnode('sec', u), fnode('tan', u)), du);
+          case 'csc': return { t: 'neg', a: mul(mul(fnode('csc', u), fnode('cot', u)), du) };
+          case 'sinh': return mul(fnode('cosh', u), du);
+          case 'cosh': return mul(fnode('sinh', u), du);
+          case 'tanh': return div(du, sq(fnode('cosh', u)));
+          case 'exp': return mul(n, du);
+          case 'ln': return div(du, u);
+          case 'lg': return div(du, mul(u, fnode('ln', { t: 'num', v: F(10) })));
+          case 'arcsin': return div(du, { t: 'pow', a: sub(N1, sq(u)), b: { t: 'num', v: F(1, 2) } });
+          case 'arccos': return { t: 'neg', a: div(du, { t: 'pow', a: sub(N1, sq(u)), b: { t: 'num', v: F(1, 2) } }) };
+          case 'arctan': return div(du, add(N1, sq(u)));
+        }
+    }
+    throw new Error('diff');
+  }
+
+  /* yig'indi va ko'paytmani soddalashtirish */
+  function sumTerms(n, sign, out) {
+    if (n.t === 'add') { sumTerms(n.a, sign, out); sumTerms(n.b, sign, out); return; }
+    if (n.t === 'sub') { sumTerms(n.a, sign, out); sumTerms(n.b, fNeg(sign), out); return; }
+    if (n.t === 'neg') { sumTerms(n.a, fNeg(sign), out); return; }
+    leaf(simp(n), sign, out);
+  }
+  function leaf(n, sign, out) {
+    if (n.t === 'neg') { leaf(n.a, fNeg(sign), out); return; }
+    if (n.t === 'add' || n.t === 'sub') { sumTerms(n, sign, out); return; }
+    var cv = constVal(n);
+    if (cv) { out.cst = fAdd(out.cst, fMul(sign, cv)); return; }
+    var c = sign, rest = n;
+    if (n.t === 'mul') {
+      var factors = [];
+      flatMul(n, factors);
+      var cf = ONE, keep = [];
+      factors.forEach(function (f) { var v = constVal(f); if (v) cf = fMul(cf, v); else keep.push(f); });
+      c = fMul(sign, cf);
+      rest = keep.reduce(function (acc, f) { return acc ? mul(acc, f) : f; }, null);
+    }
+    var key = toTex(rest);
+    if (out.map[key]) out.map[key].c = fAdd(out.map[key].c, c);
+    else { out.map[key] = { c: c, node: rest }; out.list.push(out.map[key]); }
+  }
+  function flatMul(n, out) {
+    if (n.t === 'mul') { flatMul(n.a, out); flatMul(n.b, out); } else out.push(n);
+  }
+  function simp(n) {
+    var cv = constVal(n);
+    if (cv) return nnum(cv);
+    switch (n.t) {
+      case 'neg': case 'add': case 'sub': {
+        var o = { cst: ZERO, map: {}, list: [] };
+        sumTerms(n, ONE, o);
+        var res = null;
+        function put(c, node) {
+          if (isZero(c)) return;
+          var mag = abs(c.n), neg = c.n < 0n, body;
+          var cm = F(mag, c.d);
+          body = node ? (isOne(cm) ? node : mul({ t: 'num', v: cm }, node)) : { t: 'num', v: cm };
+          if (!res) res = neg ? { t: 'neg', a: body } : body;
+          else res = neg ? sub(res, body) : add(res, body);
+        }
+        o.list.forEach(function (t) { put(t.c, t.node); });
+        put(o.cst, null);
+        return res || N0;
+      }
+      case 'mul': {
+        var fs = [];
+        flatMul(n, fs);
+        var coef = ONE, keep = [], neg = false;
+        fs.forEach(function (f) {
+          f = simp(f);
+          if (f.t === 'neg') { neg = !neg; f = f.a; }
+          var v = constVal(f);
+          if (v) coef = fMul(coef, v); else keep.push(f);
+        });
+        if (isZero(coef)) return N0;
+        if (neg) coef = fNeg(coef);
+        /* bir xil ko'paytuvchilarni darajaga yig'ish */
+        var counts = [], idx = {};
+        keep.forEach(function (f) {
+          var base = f, ex = ONE;
+          if (f.t === 'pow') { var ce = constVal(f.b); if (ce) { base = f.a; ex = ce; } }
+          var k = toTex(base);
+          if (idx[k] !== undefined) counts[idx[k]].ex = fAdd(counts[idx[k]].ex, ex);
+          else { idx[k] = counts.length; counts.push({ base: base, ex: ex }); }
+        });
+        var body = null;
+        counts.forEach(function (c) {
+          if (isZero(c.ex)) return;
+          var f = isOne(c.ex) ? c.base : { t: 'pow', a: c.base, b: nnum(c.ex) };
+          body = body ? mul(body, f) : f;
+        });
+        if (!body) return nnum(coef);
+        if (isOne(coef)) return body;
+        if (coef.n === -1n && coef.d === 1n) return { t: 'neg', a: body };
+        return coef.n < 0n ? { t: 'neg', a: mul({ t: 'num', v: fNeg(coef) }, body) } : mul({ t: 'num', v: coef }, body);
+      }
+      case 'div': {
+        var a = simp(n.a), b = simp(n.b), cb = constVal(b);
+        if (constVal(a) && isZero(constVal(a))) return N0;
+        if (cb && !isZero(cb)) return simp(mul(nnum(fDiv(ONE, cb)), a));
+        return div(a, b);
+      }
+      case 'pow': {
+        var ba = simp(n.a), ex = simp(n.b), ce = constVal(ex);
+        if (ce && isZero(ce)) return N1;
+        if (ce && isOne(ce)) return ba;
+        return { t: 'pow', a: ba, b: ex };
+      }
+      case 'fn': {
+        var arg = simp(n.a);
+        if (n.name === 'ln' && arg.t === 'e') return N1;
+        return fnode(n.name, arg);
+      }
+      default: return n;
+    }
+  }
+  function nthDiff(ast, k) {
+    var cur = simp(ast);
+    for (var i = 0; i < k; i++) cur = simp(diffAst(cur));
+    return cur;
+  }
+
+  /* ================= umumiy kirish ================= */
+  function analyze(src) {
+    var ast;
+    try { ast = parse(src); } catch (e) {
+      if (e && e.isParseError) return { error: e.message };
+      throw e;
+    }
+    var terms = decompose(ast);
+    var out = {
+      ast: ast,
+      tex: 'y=' + toTex(ast),
+      nerd: toNerd(ast),
+      terms: terms,
+      formula: null
+    };
+    if (terms) out.formula = buildFormula(terms);
+    return out;
+  }
+
+  return {
+    LIMITS: LIM, analyze: analyze, parse: parse, toTex: toTex, evalAst: evalAst, toNerd: toNerd,
+    decompose: decompose, ParseError: ParseError, nthDiff: nthDiff, diffAst: diffAst
+  };
+});
+
+</script>
+<script>
+(function () {
+  'use strict';
+  var X = window.HosilaExpr;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function h(tag, cls, text) {
+    var el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (text != null) el.textContent = text;
+    return el;
+  }
+
+  /* ---------- bo'limlar (keyinchalik yangilari qo'shiladi) ---------- */
+  var SECTIONS = [
+    { id: 'hosila', title: 'Hosila', sub: 'n-tartibli', ready: true },
+    { id: 'soon', title: "Yangi bo'lim", sub: 'Tez orada', ready: false }
+  ];
+
+  /* ---------- MathJax ---------- */
+  var mj = { ready: false, pending: [] };
+
+  function setMath(el, tex, display) {
+    el.dataset.tex = tex;
+    el.dataset.disp = display ? '1' : '';
+    if (mj.ready) {
+      try {
+        el.replaceChildren(window.MathJax.tex2svg(tex, { display: !!display }));
+        el.classList.remove('raw');
+        return;
+      } catch (e) { /* zaxira ko'rinishga o'tamiz */ }
+    }
+    el.textContent = tex;
+    el.classList.add('raw');
+    if (!mj.ready && mj.pending.indexOf(el) === -1) mj.pending.push(el);
+  }
+  function mathOK(tex) {
+    if (!mj.ready) return false;
+    try {
+      var node = window.MathJax.tex2svg(tex, { display: true });
+      return !node.querySelector('[data-mjx-error]');
+    } catch (e) { return false; }
+  }
+  function mathReady() {
+    if (mj.ready) return;
+    mj.ready = true;
+    try { document.head.appendChild(window.MathJax.svgStylesheet()); } catch (e) { /* ixtiyoriy */ }
+    var list = mj.pending; mj.pending = [];
+    list.forEach(function (el) {
+      if (document.body.contains(el)) setMath(el, el.dataset.tex, el.dataset.disp === '1');
+    });
+    update(false);
+  }
+  (function waitForMath() {
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries++;
+      if (window.MathJax && typeof window.MathJax.tex2svg === 'function') { clearInterval(timer); mathReady(); }
+      else if (tries > 100) clearInterval(timer);
+    }, 100);
+  })();
+
+  /* ---------- bo'limlar paneli ---------- */
+  function buildTabs() {
+    var nav = $('#tabs');
+    SECTIONS.forEach(function (s) {
+      var b = h('button', 'tab');
+      b.type = 'button';
+      b.append(h('b', null, s.title), h('small', null, s.sub));
+      if (s.ready) b.setAttribute('aria-current', 'page');
+      else { b.setAttribute('aria-disabled', 'true'); b.tabIndex = -1; }
+      nav.append(b);
+    });
+  }
+
+  /* ---------- belgilar paneli ---------- */
+  var KEYS = [
+    { l: 'x', v: 'x' }, { l: '^', v: '^', a: 'daraja' }, { l: '(', v: '(' }, { l: ')', v: ')' },
+    { l: '+', v: '+' }, { l: '−', v: '-', a: 'ayirish' }, { l: '×', v: '*', a: "ko'paytirish" }, { l: '÷', v: '/', a: "bo'lish" },
+    { l: 'sin', v: 'sin(', fn: 1 }, { l: 'cos', v: 'cos(', fn: 1 }, { l: 'tan', v: 'tan(', fn: 1 }, { l: 'ln', v: 'ln(', fn: 1, a: 'natural logarifm' },
+    { l: 'lg', v: 'lg(', fn: 1, a: "o'nli logarifm" }, { l: '√', v: 'sqrt(', fn: 1, a: 'kvadrat ildiz' }, { l: 'eˣ', v: 'e^(', fn: 1, a: "e ning darajasi" }, { l: 'π', v: 'pi', a: 'pi soni' },
+    { l: '⌫', act: 'back', a: "Oxirgi belgini o'chirish" }, { l: 'C', act: 'clear', a: 'Hammasini tozalash' }
+  ];
+  function buildKeys() {
+    var box = $('#keys');
+    KEYS.forEach(function (k) {
+      var b = h('button', 'key' + (k.fn ? ' fn' : ''), k.l);
+      b.type = 'button';
+      b.setAttribute('aria-label', k.a || k.v || k.l);
+      b.addEventListener('mousedown', function (e) { e.preventDefault(); });
+      b.addEventListener('click', function () { press(k); });
+      box.append(b);
+    });
+  }
+  function press(k) {
+    var el = $('#f-expr');
+    var s = el.selectionStart, e = el.selectionEnd;
+    if (s == null) { s = e = el.value.length; }
+    var val = el.value, pos;
+    if (k.act === 'clear') { el.value = ''; pos = 0; }
+    else if (k.act === 'back') {
+      if (s !== e) { el.value = val.slice(0, s) + val.slice(e); pos = s; }
+      else if (s > 0) { el.value = val.slice(0, s - 1) + val.slice(e); pos = s - 1; }
+      else pos = 0;
+    } else { el.value = val.slice(0, s) + k.v + val.slice(e); pos = s + k.v.length; }
+    try { el.setSelectionRange(pos, pos); } catch (err) { /* ixtiyoriy */ }
+    update(false);
+  }
+
+  /* ---------- zaxira: ixtiyoriy funksiyani ketma-ket differensiallash ---------- */
+  var CHECK_PTS = [0.3, 0.7, 1.3, 2.6, 0.45, -0.5, 3.4];
+  function casDerivs(ast, n) {
+    var rows = [];
+    var nd = window.nerdamer && window.nerdamer.diff ? window.nerdamer : null;
+    var cur = null;
+    if (nd) { try { cur = nd(X.toNerd(ast)); } catch (e) { nd = null; } }
+    for (var k = 1; k <= n; k++) {
+      var own = X.nthDiff(ast, k);
+      var tex = X.toTex(own);
+      var best = tex;
+      if (nd && cur) {
+        try {
+          cur = nd.diff(cur, 'x');
+          var cand = cur.toTeX();
+          var checked = 0, ok = true;
+          for (var i = 0; i < CHECK_PTS.length && checked < 3; i++) {
+            var ref = X.evalAst(own, CHECK_PTS[i]);
+            if (!isFinite(ref)) continue;
+            var v = Number(cur.evaluate({ x: CHECK_PTS[i] }).text('decimals'));
+            checked++;
+            if (!(Math.abs(v - ref) <= 1e-6 * Math.max(1, Math.abs(ref)))) { ok = false; break; }
+          }
+          if (ok && checked > 0 && cand && cand.length <= tex.length + 40 && mathOK(cand)) best = cand;
+        } catch (e) { nd = null; cur = null; }
+      }
+      rows.push(best);
+    }
+    return rows;
+  }
+
+  /* ---------- natijani chizish ---------- */
+  function norm(s) { return s.replace(/\\left|\\right|\\,|\s|[()]/g, ''); }
+
+  function renderEmpty(msg) { $('#res-body').replaceChildren(h('p', 'empty', msg)); }
+
+  function renderResult(a, n) {
+    var box = $('#res-body');
+    box.replaceChildren();
+    var step = 1;
+    function block(label, cls) {
+      var b = h('div', 'blk' + (cls ? ' ' + cls : ''));
+      b.append(h('div', 'lbl', label));
+      box.append(b);
+      return b;
+    }
+    function row(parent, tex, cls) {
+      var d = h('div', 'math' + (cls ? ' ' + cls : ''));
+      parent.append(d);
+      setMath(d, tex, true);
+      return d;
+    }
+    function copyBtn(parent, tex) {
+      var r = h('div', 'ans-row');
+      var cb = h('button', 'btn', 'LaTeX nusxalash');
+      cb.type = 'button';
+      cb.addEventListener('click', function () { copyText(tex); });
+      r.append(cb);
+      parent.append(r);
+    }
+    var yn = 'y^{(' + n + ')}';
+
+    var b0 = block('Berilgan funksiya');
+    row(b0, a.tex);
+
+    var f = a.formula;
+    if (f) {
+      if (f.domain) {
+        var dm = h('p', 'dom', 'Aniqlanish sohasi: ');
+        var sp = h('span', 'inline-math');
+        dm.append(sp); b0.append(dm);
+        setMath(sp, f.domain, false);
+      }
+      if (norm(f.rewrite) !== norm(a.tex)) {
+        var b1 = block(step++ + '-qadam. Funksiyani hadlarga ajratamiz');
+        row(b1, f.rewrite);
+      }
+      var onlyConst = a.terms.every(function (t) { return t.kind === 'const'; });
+      if (onlyConst) {
+        var bc = block('Izoh');
+        bc.append(h('p', null, "Funksiya o‘zgarmas son, o‘zgarmasning hosilasi nolga teng."));
+      } else {
+        var cnt = Math.min(3, n);
+        var b2 = block(step++ + '-qadam. Birinchi hosilalar');
+        for (var k = 1; k <= cnt; k++) row(b2, 'y' + "'".repeat(k) + '=' + f.at(k).tex);
+
+        var b3 = block(step++ + '-qadam. Qonuniyat');
+        b3.append(h('p', null, "Yig‘indining hosilasi hosilalar yig‘indisiga teng, shuning uchun har bir had alohida differensiallanadi. Ichki chiziqli ifoda ax+b har qadamda a ko‘paytuvchi beradi."));
+        f.rules.forEach(function (t) { row(b3, t); });
+      }
+      var ba = block('Javob', 'answer');
+      row(ba, f.general, 'big');
+      if (f.polyNote) ba.append(h('p', null, "Ko‘phad hadlari (xᵏ ko‘rinishida) faqat n ≤ k bo‘lganda qatnashadi, n > k bo‘lsa ular nolga teng."));
+      copyBtn(ba, f.general);
+
+      var bn = block('n = ' + n + ' bo‘lganda');
+      row(bn, yn + '=' + f.at(n).tex, 'big');
+      return;
+    }
+
+    /* umumiy formula topilmadigan holat */
+    var nb = block('Izoh');
+    nb.append(h('p', null, "Bu funksiyada ko‘paytma, murakkab ichki funksiya yoki shunga o‘xshash tuzilma bor, shuning uchun n bo‘yicha umumiy formula chiqarilmadi. Hosilalar ketma-ket differensiallash bilan hisoblandi."));
+    if (n > X.LIMITS.casMax) {
+      renderEmptyInto(nb, 'Bunday funksiya uchun n ' + X.LIMITS.casMax + ' dan oshmasligi kerak. n ni kamaytiring.');
+      return;
+    }
+    var rows;
+    try { rows = casDerivs(a.ast, n); } catch (e) { rows = null; }
+    if (!rows) { renderEmptyInto(nb, 'Hosilani hisoblab bo‘lmadi. Funksiyani soddaroq yozib ko‘ring.'); return; }
+    var tooLong = rows.some(function (t) { return t.length > 4000; });
+    if (tooLong) { renderEmptyInto(nb, 'Natija juda uzun bo‘lib ketdi. n ni kamaytiring yoki funksiyani soddalashtiring.'); return; }
+    var bs = block('Hosilalar');
+    rows.forEach(function (t, i) {
+      var k2 = i + 1;
+      var last = k2 === n;
+      row(bs, (k2 <= 3 ? 'y' + "'".repeat(k2) : 'y^{(' + k2 + ')}') + '=' + t, last ? 'big' : '');
+    });
+    var ba2 = block('Javob', 'answer');
+    row(ba2, yn + '=' + rows[rows.length - 1], 'big');
+    copyBtn(ba2, yn + '=' + rows[rows.length - 1]);
+  }
+  function renderEmptyInto(parent, msg) { parent.append(h('p', 'empty', msg)); }
+
+  /* ---------- yangilash ---------- */
+  var lastKey = '';
+  function update(scroll) {
+    var exprEl = $('#f-expr'), nEl = $('#f-n'), err = $('#err'), prev = $('#preview');
+    exprEl.removeAttribute('aria-invalid'); nEl.removeAttribute('aria-invalid');
+    var expr = exprEl.value;
+    if (!expr.trim()) {
+      err.textContent = ''; prev.hidden = true;
+      renderEmpty('Funksiyani yozing, yechim shu yerda paydo bo‘ladi.');
+      return;
+    }
+    var a;
+    try { a = X.analyze(expr); } catch (e) { a = { error: 'Ifodani hisoblab bo‘lmadi. Yozilishini tekshiring.' }; }
+    if (a.error) {
+      exprEl.setAttribute('aria-invalid', 'true');
+      err.textContent = a.error; prev.hidden = true;
+      renderEmpty('Funksiyani to‘g‘ri yozing: ' + a.error);
+      return;
+    }
+    prev.hidden = false;
+    setMath(prev, a.tex, true);
+    var raw = String(nEl.value || '').trim();
+    var n = /^\d{1,2}$/.test(raw) ? parseInt(raw, 10) : NaN;
+    if (!(n >= 1 && n <= X.LIMITS.nMax)) {
+      nEl.setAttribute('aria-invalid', 'true');
+      err.textContent = 'n 1 dan ' + X.LIMITS.nMax + ' gacha butun son bo‘lishi kerak.';
+      renderEmpty('n ni 1 dan ' + X.LIMITS.nMax + ' gacha butun son qilib kiriting.');
+      return;
+    }
+    err.textContent = '';
+    var key = expr + '|' + n + '|' + (mj.ready ? 1 : 0) + '|' + (window.nerdamer ? 1 : 0);
+    if (key !== lastKey || scroll) { lastKey = key; renderResult(a, n); }
+    if (scroll) scrollToResult();
+  }
+  function scrollToResult() {
+    var el = $('#result');
+    if (!el || typeof el.scrollIntoView !== 'function') return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    try { el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); } catch (e) { el.scrollIntoView(); }
+  }
+  var timer = null;
+  function later() { clearTimeout(timer); timer = setTimeout(function () { update(false); }, 160); }
+
+  function bumpN(d) {
+    var el = $('#f-n');
+    var v = parseInt(el.value, 10);
+    if (isNaN(v)) v = 5;
+    el.value = String(Math.min(X.LIMITS.nMax, Math.max(1, v + d)));
+    update(false);
+  }
+
+  /* ---------- nusxalash ---------- */
+  var toastTimer = null;
+  function toast(msg) {
+    var t = $('#toast');
+    t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('on'); }, 2200);
+  }
+  function copyText(text) {
+    function legacy() {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+        document.body.appendChild(ta); ta.select();
+        var ok = document.execCommand && document.execCommand('copy');
+        ta.remove();
+        return !!ok;
+      } catch (e) { return false; }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast('Nusxalandi'); }, function () {
+        toast(legacy() ? 'Nusxalandi' : 'Nusxalab bo‘lmadi');
+      });
+    } else toast(legacy() ? 'Nusxalandi' : 'Nusxalab bo‘lmadi');
+  }
+
+  /* ---------- rejim ---------- */
+  function initTheme() {
+    var root = document.documentElement, btn = $('#theme');
+    function effective() {
+      var t = root.getAttribute('data-theme');
+      if (t) return t;
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    try {
+      var saved = localStorage.getItem('hosila-theme');
+      if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved);
+    } catch (e) { /* ixtiyoriy */ }
+    btn.setAttribute('aria-pressed', String(effective() === 'dark'));
+    btn.addEventListener('click', function () {
+      var next = effective() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      btn.setAttribute('aria-pressed', String(next === 'dark'));
+      try { localStorage.setItem('hosila-theme', next); } catch (e) { /* ixtiyoriy */ }
+    });
+  }
+
+  /* ---------- ishga tushirish ---------- */
+  buildTabs();
+  buildKeys();
+  initTheme();
+  $('#form').addEventListener('submit', function (e) { e.preventDefault(); update(true); });
+  $('#f-expr').addEventListener('input', later);
+  $('#f-n').addEventListener('input', later);
+  $('#n-minus').addEventListener('click', function () { bumpN(-1); });
+  $('#n-plus').addEventListener('click', function () { bumpN(1); });
+  var ns = document.getElementById('nerd-script');
+  if (ns) ns.addEventListener('load', function () { lastKey = ''; update(false); });
+  update(false);
+})();
+
+</script>
+
+</body></html>
